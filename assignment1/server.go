@@ -11,7 +11,6 @@ import "github.com/syndtr/goleveldb/leveldb"
 //import "reflect"
 
 func serverMain() {
-  //versionMap := map[string]int{}
   db, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment1/versionMap", nil)
   defer db.Close()
   
@@ -29,12 +28,12 @@ func serverMain() {
 			fmt.Println("Error accepting: ", err.Error())
             os.Exit(1)
 		}
-		go handleConnection(conn, db)//, versionMap)
+		go handleConnection(conn, db)
 	}
   
 }
 
-func handleConnection(conn net.Conn, db *leveldb.DB) {//, versionMap map[string]int) {
+func handleConnection(conn net.Conn, db *leveldb.DB) {
   
     defer conn.Close()
     // Make a buffer to hold incoming data.
@@ -45,28 +44,19 @@ func handleConnection(conn net.Conn, db *leveldb.DB) {//, versionMap map[string]
 
     // Read the incoming connection into the buffer.
     // Warning : We might not get the complete message
-    //for {
-        n, err := conn.Read(buf)
-        // Was there an error in reading ?
-        if err != nil {
-            if err != io.EOF {
-                fmt.Println("Error reading:", err.Error())
-            }
-            //break
+    n, err := conn.Read(buf)
+    // Was there an error in reading ?
+    if err != nil {
+        if err != io.EOF {
+            fmt.Println("Error reading:", err.Error())
         }
+        //break
+    }
 
-        sLarge := string(buf[:n])
-        s := strings.Split(sLarge, "\r\n")
-        commands := strings.Split(s[0], " ")
-        /*
-        if strings.Count(sLarge, "\r\n") == 1 {
-            terminated = false
-        } else if strings.Count(sLarge, "\r\n") == 2 {
-            terminated = true
-        }
-        */
-    //}
-    
+    sLarge := string(buf[:n])
+    s := strings.Split(sLarge, "\r\n")
+    commands := strings.Split(s[0], " ")
+
     if(len(commands) < 2){
         conn.Write([]byte("ERR_CMD_ERR\r\n"))
     }else { 
@@ -110,18 +100,6 @@ func handleConnection(conn net.Conn, db *leveldb.DB) {//, versionMap map[string]
         if err == nil {
             version, err = strconv.ParseInt(string(data), 10, 64)
         }
-        /*
-        if os.IsNotExist(err) {
-            // path/to/whatever does not exist
-            //version := 0
-            versionMap[fileName] = 0
-        } else {
-            _, err := versionMap[fileName]
-            if err == false {
-                versionMap[fileName] = 0
-            }
-        }
-        */
 
         file, err := os.Create(fileName)
         defer file.Close() // make sure to close the file even if we panic.
@@ -147,8 +125,6 @@ func handleConnection(conn net.Conn, db *leveldb.DB) {//, versionMap map[string]
             }
         }
 
-        //var lastElement string = ""
-        //if terminated == false {
         for {
             if currentByte >= int64(fileSize) {
                 break
@@ -163,13 +139,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB) {//, versionMap map[string]
                 conn.Write([]byte("ERR_INTERNAL\r\n"))
                 return
             }
-            //fileString := string(buf[:n])
-            //if lastElement + fileString[0:1] == "\r\n" || strings.Count(fileString, "\r\n") > 0 { 
-            //    break
-            //}
-            //lastElement = fileString[len(fileString) - 1:]
         }
-        //}
 
         file.Sync()
         //versionMap[fileName]++
