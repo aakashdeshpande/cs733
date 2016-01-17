@@ -1,7 +1,8 @@
 package main 
 import "net" 
 import "fmt" 
-import "bufio" 
+import "bufio"
+import "sync" 
 //import "io"
 //import "os"
 
@@ -20,38 +21,72 @@ func TestServer(t *testing.T) {
 	// connect to this socket   
 	conn, _ := net.Dial("tcp", "localhost:8080")  
 
-	//for {     
-		// read in input from stdin     
-		//reader := bufio.NewReader(os.Stdin)     
-		text, _ := "write input2.txt 50\r\nThis is serious. There are two types of assignment operators in go := and =. They are semantically equivalent (with respect to assignment) but the first one is also a ( http://golang.org/ref/spec#Short_variable_declarations ) which means that in the left we need to have at least a new variable declaration for it to be correct. \r", " " //reader.ReadString('\n')     
-		// send to socket     
-		fmt.Fprintf(conn, text + "\n")
+	text := "delete input2.txt\r\n"
+	fmt.Fprintf(conn, text)	
 
-	//} 
+	message, _ := bufio.NewReader(conn).ReadString('\n')     
+	fmt.Print("Message from server: "+message)   
 
-		// connect to this socket   
-		conn2, _ := net.Dial("tcp", "localhost:8080")  
+	text = "write input2.txt 15\r\nThis is a file.\r\n"    
+	fmt.Fprintf(conn, text)
 
-	//for {     
-		// read in input from stdin     
-		//reader := bufio.NewReader(os.Stdin)     
-		text2, _ := "write input2.txt 10\r\nThis\r\n is:\r\nread input2.txt\r", " " //reader.ReadString('\n')     
-		// send to socket     
-		fmt.Fprintf(conn2, text2 + "\n")
+	// connect to this socket   
+	conn2, _ := net.Dial("tcp", "localhost:8080")  
 
-		message, _ := bufio.NewReader(conn).ReadString('\n')     
-		fmt.Print("Message from server: "+message)   
+	text2 := "write input2.txt 10\r\nThis\r\n is.\r\nread input2.txt\r\n"   
+	fmt.Fprintf(conn2, text2)
 
-		message, _ = bufio.NewReader(conn2).ReadString('\n')     
-		fmt.Print("Message from server: "+message)  
+	message, _ = bufio.NewReader(conn).ReadString('\n')     
+	fmt.Print("Message from server: "+message)   
 
-		message, _ = bufio.NewReader(conn2).ReadString(':')     
-		fmt.Print("Message from server: "+message)  
+	message, _ = bufio.NewReader(conn2).ReadString('\n')     
+	fmt.Print("Message from server: "+message)  
 
-				message, _ = bufio.NewReader(conn2).ReadString('\n')     
-		fmt.Print("Message from server: "+message)  
+	message, _ = bufio.NewReader(conn2).ReadString('.')     
+	fmt.Print("Message from server: "+message)  
 
-  
+	message, _ = bufio.NewReader(conn2).ReadString('\n')     
+	fmt.Print("Message from server: "+message)  
 
-	//} 	
+	text = "write input2.txt\r\n"
+	fmt.Fprintf(conn, text)
+
+	message, _ = bufio.NewReader(conn).ReadString('\n')     
+	fmt.Print("Message from server: "+message)   
+
+	text = "cas input2.txt"
+	fmt.Fprintf(conn, text)
+
+	text = " 2 5\r\n1\r\n"
+	fmt.Fprintf(conn, text)
+
+	text = "23\r\n"
+	fmt.Fprintf(conn, text)
+
+	message, _ = bufio.NewReader(conn).ReadString('\n')     
+	fmt.Print("Message from server: "+message) 
+
+	i := 0
+	var wg sync.WaitGroup
+	wg.Add(10)
+	for i < 10 {
+		go func(wg *sync.WaitGroup){
+			conn, _ := net.Dial("tcp", "localhost:8080")  
+			text = "write input2.txt 15\r\nThis is a file.\r\n"    
+			fmt.Fprintf(conn, text)
+			bufio.NewReader(conn).ReadString('\n') 
+			//fmt.Print("Message from server: "+message) 
+			wg.Done()
+			}(&wg)
+		i++	
+	}
+
+	wg.Wait()
+	text2 = "read input2.txt\r\n"   
+	fmt.Fprintf(conn2, text2)	
+
+	message, _ = bufio.NewReader(conn2).ReadString('2')     
+	fmt.Print("Message from server: "+message)  
+
+
 } 

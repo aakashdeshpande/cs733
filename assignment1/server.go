@@ -79,7 +79,9 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
         s := strings.Split(sLarge, "\r\n") // Isolate main command from input 
         commands := strings.Split(s[0], " ")
         // Remove extra input apart from basic command string
-        sLarge = string(buf[int64(len([]byte(s[0] + "\r\n"))):bufferRead])
+
+        var remainder int64 = int64(len([]byte(sLarge)) - len([]byte(s[0] + "\r\n")))
+        sLarge = sLarge[len(s[0] + "\r\n"):]
 
         if(len(commands) < 2){
             conn.Write([]byte("ERR_CMD_ERR\r\n"))
@@ -161,9 +163,9 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             var currentByte int64 = 0
             // If we have already read part of the file along with the command
             if len(s) > 1{
-                bufSplit := buf[len([]byte(s[0] + "\r\n")):bufferRead]
+                bufSplit := buf[int64(bufferRead) - remainder:bufferRead]
                 if int64(len(bufSplit)) > fileSize {
-                    sLarge = string(buf[int64(len([]byte(s[0] + "\r\n"))) + fileSize:bufferRead])
+                    sLarge = string(buf[int64(bufferRead) - remainder + fileSize:bufferRead])
                     bufSplit = bufSplit[:fileSize]
                 }
                 _, err := file.WriteAt(bufSplit, currentByte)
@@ -284,9 +286,9 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             var currentByte int64 = 0
             // If we have already read part of the file along with the command
             if len(s) > 1{
-                bufSplit := buf[len([]byte(s[0] + "\r\n")):bufferRead]
+                bufSplit := buf[int64(bufferRead) - remainder:bufferRead]
                 if int64(len(bufSplit)) > fileSize {
-                    sLarge = string(buf[int64(len([]byte(s[0] + "\r\n"))) + fileSize:bufferRead])
+                    sLarge = string(buf[int64(bufferRead) - remainder + fileSize:bufferRead])
                     bufSplit = bufSplit[:fileSize]
                 }
                 _, err := file.WriteAt(bufSplit, currentByte)
