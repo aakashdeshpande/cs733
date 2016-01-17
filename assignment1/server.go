@@ -51,9 +51,11 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
     var sLarge string = ""
     var bufferRead int = 0
 
+    // Iterate over different commands, takes residual string as input
     OUTER:    
     for{
 
+        // Check residual string from previous command
         buf = []byte(sLarge)   
         bufferRead = len([]byte(sLarge)) 
 
@@ -65,17 +67,15 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             }
             buf = make([]byte, bufferSize)
             n, err := conn.Read(buf)
-            // Was there an error in reading ?
             if err != nil {
                 if err != io.EOF {
                     fmt.Println("Error reading:", err.Error())
                 }
             }
-            sLarge += string(buf[:n])
+            sLarge += string(buf[:n]) // Read till we get the complete command
             bufferRead = n
         }
         
-        fmt.Println("Reached")
         s := strings.Split(sLarge, "\r\n") // Isolate main command from input 
         commands := strings.Split(s[0], " ")
         // Remove extra input apart from basic command string
@@ -101,7 +101,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             var currentByte int64 = 0
             fileBuffer := make([]byte, bufferSize)
 
-            //read file until there is an error
+            // Read file until there is an error
             for {
                 n, err := file.ReadAt(fileBuffer, currentByte)
                 currentByte += int64(n)
@@ -119,6 +119,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             if err != nil && err != io.EOF {
                 conn.Write([]byte("ERR_INTERNAL\r\n"))
             } else { 
+                // Print version
                 var version int64 = 0
                 data, err := db.Get([]byte(fileName), nil)
                 if err == nil {
@@ -131,7 +132,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             if err != nil {
                 conn.Write([]byte("ERR_FILE_NOT_FOUND\r\n"))
             } else {
-                db.Delete([]byte(fileName), nil)
+                db.Delete([]byte(fileName), nil) // Remove entry from database
                 conn.Write([]byte("OK \r\n"))
             }
         } else if commands[0] == "write" {
@@ -150,11 +151,13 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             }
             defer file.Close() // make sure to close the file even if we panic.
 
+            // NUmber of bytes to be written to the file
             fileSize, err := strconv.ParseInt(commands[2], 10, 64)
             fileSize = fileSize + int64(len([]byte("\r\n")))
 
             mutex.Lock()
 
+            // Total bytes of file written
             var currentByte int64 = 0
             // If we have already read part of the file along with the command
             if len(s) > 1{
@@ -171,6 +174,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
                 }
             }
 
+            // Check for timeout
             c1 := make(chan bool, 1) 
             if len(commands) > 3 {
                 exp, _  := strconv.Atoi(commands[3])
@@ -196,6 +200,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
                     c1 <- false
                 }(&n, conn, &buf)
                 
+                // Check for timeout or input
                 res = <- c1
                 if res == true {
                     break
@@ -204,15 +209,13 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
                 if int64(n) > fileSize - currentByte {
                     bufSplit := buf[:fileSize - currentByte]
                     _, err = file.WriteAt(bufSplit, currentByte)
+                    sLarge = string(buf[fileSize - currentByte:]) // Residual string after file is read
                 } else {
                     _, err = file.WriteAt(buf, currentByte)
                 }
                 if err != nil {
                     conn.Write([]byte("ERR_INTERNAL\r\n"))
                     return
-                }
-                if currentByte + int64(n) > fileSize {
-                    sLarge = string(buf[fileSize - currentByte:])
                 }
                 currentByte += int64(n)    
             }
@@ -228,6 +231,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             conn.Write([]byte("OK " + strconv.FormatInt(version+1, 10) + "\r\n"))    
             mutex.Unlock()
 
+            // If timeout, clear residual string
             if res == true {
                 <- c1
                 sLarge = string(buf[:n])
@@ -241,6 +245,8 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             } 
 
             mutex.Lock()
+
+            // Get file version
             var version int64 = 0
             data, err := db.Get([]byte(fileName), nil)
             if err == nil {
@@ -255,6 +261,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
                 return
             }
 
+            // Check for version match
             if version != fileVersion {
                 conn.Write([]byte("ERR_VERSION\r\n"))
                 fmt.Println(err)
@@ -270,6 +277,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
                 return
             }
 
+            // Number of bytes to be written to file
             fileSize, err := strconv.ParseInt(commands[3], 10, 64)
             fileSize = fileSize + int64(len([]byte("\r\n")))
 
@@ -289,6 +297,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
                 }
             }
 
+            // Check for timeout
             c1 := make(chan bool, 1) 
             if len(commands) > 4 {
                 exp, _  := strconv.Atoi(commands[4])
@@ -314,6 +323,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
                     c1 <- false
                 }(&n, conn, &buf)
                 
+                // Check for timeout or input
                 res = <- c1
                 if res == true {
                     break
@@ -322,15 +332,13 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
                 if int64(n) > fileSize - currentByte {
                     bufSplit := buf[:fileSize - currentByte]
                     _, err = file.WriteAt(bufSplit, currentByte)
+                    sLarge = string(buf[fileSize - currentByte:]) // Residual string after file is read
                 } else {
                     _, err = file.WriteAt(buf, currentByte)
                 }
                 if err != nil {
                     conn.Write([]byte("ERR_INTERNAL\r\n"))
                     return
-                }
-                if currentByte + int64(n) > fileSize {
-                    sLarge = string(buf[fileSize - currentByte:])
                 }
                 currentByte += int64(n)    
             }
@@ -340,6 +348,7 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
             conn.Write([]byte("OK " + strconv.FormatInt(version, 10) + "\r\n"))
             mutex.Unlock()
 
+            // If timeout, clear residual string
             if res == true {
                 <- c1
                 sLarge = string(buf[:n])
@@ -355,5 +364,4 @@ func handleConnection(conn net.Conn, db *leveldb.DB, mutex *sync.Mutex) {
 
 func main() {
 	serverMain()
-	fmt.Printf("Hello, world.\n")
 }
