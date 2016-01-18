@@ -1,0 +1,8 @@
+=============== Jan 18, 2016 (IST) ===============
+23:50:28.292951 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+23:50:28.356918 db@open opening
+23:50:28.357107 journal@recovery F·1
+23:50:28.357663 journal@recovery recovering @561
+23:50:28.383998 memdb@flush created L0@563 N·8 S·212B "bigfile!,d552":"ran..le!,d551"
+23:50:28.387634 db@janitor F·3 G·0
+23:50:28.387666 db@open done T·30.71899ms
