@@ -1,8 +1,16 @@
-=============== Jan 17, 2016 (IST) ===============
-19:47:40.829054 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-19:47:40.859150 db@open opening
-19:47:40.859343 journal@recovery F·1
-19:47:40.859584 journal@recovery recovering @259
-19:47:40.872711 memdb@flush created L0@261 N·14 S·223B "inp..txt,v280":"inp..txt,d267"
-19:47:40.873962 db@janitor F·5 G·0
-19:47:40.873994 db@open done T·14.810203ms
+=============== Jan 18, 2016 (IST) ===============
+12:20:18.327892 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:20:18.328288 db@open opening
+12:20:18.328385 journal@recovery F·1
+12:20:18.328917 journal@recovery recovering @317
+12:20:18.330009 memdb@flush created L0@319 N·2 S·129B "inp..txt,v445":"inp..txt,d444"
+12:20:18.331175 db@janitor F·7 G·0
+12:20:18.331206 db@open done T·2.900269ms
+12:20:18.331326 table@compaction L0·4 -> L1·1 S·834B Q·446
+12:20:18.381941 table@build created L1@322 N·1 S·121B "inp..txt,v445":"inp..txt,v445"
+12:20:18.382386 table@compaction committed F-4 S-713B Ke·0 D·33 T·50.953474ms
+12:20:18.382618 table@remove removed @319
+12:20:18.382789 table@remove removed @316
+12:20:18.382952 table@remove removed @313
+12:20:18.383112 table@remove removed @310
+12:20:18.383303 table@remove removed @309

@@ -42,11 +42,11 @@ func TestServer(t *testing.T) {
 	message, _ = bufio.NewReader(conn2).ReadString('\n')     
 	fmt.Print("Message from server: "+message)  
 
-	message, _ = bufio.NewReader(conn2).ReadString('.')     
-	fmt.Print("Message from server: "+message)  
-
 	message, _ = bufio.NewReader(conn2).ReadString('\n')     
 	fmt.Print("Message from server: "+message)  
+
+	//message, _ = bufio.NewReader(conn2).ReadString('\n')     
+	//fmt.Print("Message from server: "+message)  
 
 	text = "write input2.txt\r\n"
 	fmt.Fprintf(conn, text)
