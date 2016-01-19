@@ -44,6 +44,7 @@ func serverMain() {
 
 }
 
+// Read fileSize bytes and write to file
 func write(conn net.Conn, fileSize int64, remainder int64, bufferRead int, buf []byte, sLargePointer *string) []byte {
 
 	file := make([]byte, fileSize)
@@ -201,8 +202,8 @@ OUTER:
 			file := write(conn, fileSize, remainder, bufferRead, buf, &sLarge)
 
 			mutex.Lock()
-			err = files.Put([]byte(fileName), file, nil)
 
+			err = files.Put([]byte(fileName), file, nil)
 			// Get file version
 			var version int64 = 0
 			data, err := db.Get([]byte(fileName), nil)
@@ -222,6 +223,7 @@ OUTER:
 					err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(time.Now().Unix()+exp, 10)), nil)
 				}
 			}
+
 			mutex.Unlock()
 
 		} else if commands[0] == "cas" {
@@ -276,6 +278,7 @@ OUTER:
 					err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(time.Now().Unix()+exp, 10)), nil)
 				}
 			}
+
 			mutex.Unlock()
 
 		} else {

@@ -1,12 +1,8 @@
-=============== Jan 18, 2016 (IST) ===============
-23:49:09.857467 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-23:49:09.895312 db@open opening
-23:49:09.895455 journal@recovery F·1
-23:49:09.896004 journal@recovery recovering @558
-23:49:09.896838 memdb@flush created L0@560 N·8 S·212B "bigfile!,d543":"ran..le!,d542"
-23:49:09.898412 db@janitor F·4 G·0
-23:49:09.898443 db@open done T·3.107657ms
-23:49:17.249912 table@compaction L0·2 -> L1·0 S·424B Q·550
-23:49:17.257310 table@compaction committed F-2 S-424B Ke·0 D·16 T·7.315486ms
-23:49:17.257490 table@remove removed @560
-23:49:17.257598 table@remove removed @557
+=============== Jan 19, 2016 (IST) ===============
+12:46:00.322647 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:46:00.370872 db@open opening
+12:46:00.371071 journal@recovery F·1
+12:46:00.371636 journal@recovery recovering @612
+12:46:00.372660 memdb@flush created L0@614 N·7 S·199B "bigfile!,d665":"inp..txt,d660"
+12:46:00.374123 db@janitor F·4 G·0
+12:46:00.374163 db@open done T·3.259961ms
