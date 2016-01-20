@@ -242,7 +242,7 @@ OUTER:
 			if err == nil {
 				version, err = strconv.ParseInt(string(data), 10, 64)
 			}
-
+ 
 			if err != nil {
 				conn.Write([]byte("ERR_INTERNAL\r\n"))
 				mutex.Unlock()
@@ -253,7 +253,7 @@ OUTER:
 
 			// Check for version match
 			if version != fileVersion {
-				conn.Write([]byte("ERR_VERSION\r\n"))
+				conn.Write([]byte("ERR_VERSION " + strconv.FormatInt(version, 10) + "\r\n"))
 				mutex.Unlock()
 				continue OUTER
 			}

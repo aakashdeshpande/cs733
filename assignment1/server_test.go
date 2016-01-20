@@ -95,7 +95,7 @@ func TestVersionIncrement(t *testing.T) {
 	message, _ = bufio.NewReader(conn).ReadString('\n')
 	//fmt.Print("Message from server: "+message)
 
-	if message1 == message2 || len(message) < 2 || (message != "ERR_VERSION\r\n" && message[:2] != "OK"){
+	if message1 == message2 || len(message) < 2 || (message[:2] != "OK" && (len(message) < 11 || message[:11] != "ERR_VERSION")){
 		t.Error("Error in version concurrent write")
 	}
 }
@@ -193,7 +193,7 @@ func clients(wg *sync.WaitGroup, t *testing.T) {
 
 	str_temp = string(line)
 
-	if !(str_temp[:2] == "OK" || str_temp[:11] == "ERR_VERSION") {
+	if !((len(str_temp) > 1 && str_temp[:2] == "OK") || (len(str_temp) > 10 && str_temp[:11] == "ERR_VERSION")) {
 		t.Error(str_temp)
 	}
 
