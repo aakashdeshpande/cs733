@@ -10,6 +10,9 @@ Assignments are written in golang.
 
 Repository must be added to the src folder of the golang workspace.
 
+Leveldb package for Golang must be imported. This can be done using the following command:
+go get github.com/syndtr/goleveldb/leveldb
+
 1] Assignment 1 : File Versioning system
 	
 	a] server.go

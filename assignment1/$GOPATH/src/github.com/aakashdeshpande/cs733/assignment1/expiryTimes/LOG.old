@@ -1,14 +1,8 @@
 =============== Jan 21, 2016 (IST) ===============
-10:14:32.001797 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-10:14:32.002005 db@open opening
-10:14:32.002080 journal@recovery F·1
-10:14:32.002262 journal@recovery recovering @9
-10:14:32.013330 memdb@flush created L0@11 N·7 S·195B "inp..txt,v21":"inp..txt,v15"
-10:14:32.016418 db@janitor F·6 G·0
-10:14:32.016447 db@open done T·14.429837ms
-10:14:32.016603 table@compaction L0·3 -> L1·0 S·518B Q·22
-10:14:32.026506 table@build created L1@14 N·2 S·151B "hi.txt,v1":"inp..txt,v21"
-10:14:32.030147 table@compaction committed F-2 S-367B Ke·0 D·13 T·13.469537ms
-10:14:32.030281 table@remove removed @11
-10:14:32.030384 table@remove removed @8
-10:14:32.030483 table@remove removed @2
+20:00:03.533255 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:00:03.533529 db@open opening
+20:00:03.533637 journal@recovery F·1
+20:00:03.534164 journal@recovery recovering @55
+20:00:03.538357 memdb@flush created L0@57 N·114 S·736B "bigfile!,d1616":"inp..txt,d1506"
+20:00:03.539611 db@janitor F·6 G·0
+20:00:03.539635 db@open done T·6.093904ms

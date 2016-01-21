@@ -1,8 +1,8 @@
 =============== Jan 21, 2016 (IST) ===============
-10:14:56.072865 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-10:14:56.074379 db@open opening
-10:14:56.074515 journal@recovery F·1
-10:14:56.074722 journal@recovery recovering @12
-10:14:56.079349 memdb@flush created L0@15 N·112 S·915B "bigfile!,d237":"inp..txt,d129"
-10:14:56.080705 db@janitor F·5 G·0
-10:14:56.080755 db@open done T·6.350733ms
+20:00:28.365518 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:00:28.367940 db@open opening
+20:00:28.368228 journal@recovery F·1
+20:00:28.376501 journal@recovery recovering @58
+20:00:28.386863 memdb@flush created L0@60 N·114 S·946B "bigfile!,d1837":"inp..txt,d1727"
+20:00:28.405864 db@janitor F·7 G·0
+20:00:28.406549 db@open done T·38.575739ms

@@ -89,7 +89,7 @@ func TestVersionIncrement(t *testing.T) {
 	message2, _ := bufio.NewReader(conn2).ReadString('\n')
 	//fmt.Print("Message from server: "+message)
 
-	text = "cas input2.txt 1 2\r\n"
+	text = "cas input2.txt 1 2\r\n%#\r\n"
 	fmt.Fprintf(conn, text)
 
 	message, _ = bufio.NewReader(conn).ReadString('\n')
@@ -98,6 +98,10 @@ func TestVersionIncrement(t *testing.T) {
 	if message1 == message2 || len(message) < 2 || (message[:2] != "OK" && (len(message) < 11 || message[:11] != "ERR_VERSION")){
 		t.Error("Error in version concurrent write")
 	}
+
+	text = "delete input2.txt\r\n"
+	fmt.Fprintf(conn, text)
+
 }
 
 // Test with jumbled, split and joint commands 
@@ -111,13 +115,16 @@ func PartialCommands(t *testing.T) {
 	buf := make([]byte, 1024)
 	_, _ = conn.Write([]byte("wri"))
 	time.Sleep(1000 * time.Millisecond)
+
 	_, _ = conn.Write([]byte("te in"))
 	_, _ = conn.Write([]byte("put2.txt 10\r\n"))
 	_, _ = conn.Write([]byte("a\r\n"))
 	time.Sleep(1000 * time.Millisecond)
+
 	_, _ = conn.Write([]byte("d\n\r"))
 	_, _ = conn.Write([]byte("\rdef"))
 	time.Sleep(1000 * time.Millisecond)
+
 	_, _ = conn.Write([]byte("\r\n"))
 	
 	reader := bufio.NewReader(conn)
@@ -156,6 +163,9 @@ func PartialCommands(t *testing.T) {
 			t.Error("Error in command parsing")
 		}
 	}
+
+	text = "delete input2.txt\r\n"
+	fmt.Fprintf(conn, text)
 }
 
 // Client which performs read and write in parellel with itself
@@ -165,31 +175,27 @@ func clients(wg *sync.WaitGroup, t *testing.T) {
 
 	//checkError(err)
 	reader := bufio.NewReader(conn)
-	_, _ = conn.Write([]byte("write input2.txt 23\r\n"))
-	_, _ = conn.Write([]byte("234329giwe039he2~@#4%!@\r\n"))
-	line, _ := reader.ReadBytes('\r')
-	_, _ = reader.ReadBytes('\n')
+	_, _ = conn.Write([]byte("write input2.txt 5\r\n"))
+	_, _ = conn.Write([]byte("!#bin\r\n"))
+	line, _ := reader.ReadBytes('\n')
 
 	var str_temp string = string(line)
 	if len(str_temp) < 2 || str_temp[:2] != "OK" {
 		t.Error(str_temp)
 	}
 	_, _ = conn.Write([]byte("read input2.txt\r\n"))
-	line, _ = reader.ReadBytes('\r')
-	_, _ = reader.ReadBytes('\n')
+	line, _ = reader.ReadBytes('\n')
 
 	str_temp = string(line)
 	if len(str_temp) < 8 || str_temp[:8] != "CONTENTS" {
 		t.Error(str_temp)
 	}
 
-	line, _ = reader.ReadBytes('\r')
-	_, _ = reader.ReadBytes('\n')
+	line, _ = reader.ReadBytes('\n')
 
-	_, _ = conn.Write([]byte("cas input2.txt 12 23\r\n"))
-	_, _ = conn.Write([]byte("234329giwe039he2~@#4%!@\r\n"))
-	line, _ = reader.ReadBytes('\r')
-	_, _ = reader.ReadBytes('\n')
+	_, _ = conn.Write([]byte("cas input2.txt 12 5\r\n"))
+	_, _ = conn.Write([]byte("!#bin\r\n"))
+	line, _ = reader.ReadBytes('\n')
 
 	str_temp = string(line)
 
@@ -229,10 +235,13 @@ func TestConcurrentWrite(t *testing.T) {
 	if len(message) < 8 || message[:8] != "CONTENTS" {
 		t.Error("Error in concurrent write")
 	}
+
+	text = "delete input2.txt\r\n"
+	fmt.Fprintf(conn, text)
 }
 
 // Test concurrent write to the same file by a large number of clients
-func TestWriteExpiry(t *testing.T) {
+func TestExpiry(t *testing.T) {
 	conn, _ := net.Dial("tcp", "localhost:8080")
 	defer conn.Close()
 
@@ -243,26 +252,24 @@ func TestWriteExpiry(t *testing.T) {
 	//checkError(err)
 	reader := bufio.NewReader(conn)
 
-	_, _ = conn.Write([]byte("write input2.txt 23 2\r\n"))
-	_, _ = conn.Write([]byte("234329giwe039he2~@#4%!@\r\n"))
-	line, _ := reader.ReadBytes('\r')
-	line, _ = reader.ReadBytes('\n')
+	_, _ = conn.Write([]byte("write input2.txt 5 2\r\n"))
+	_, _ = conn.Write([]byte("!#bin\r\n"))
+	line, _ := reader.ReadBytes('\n')
 
 	time.Sleep(200 * time.Millisecond)
 	_, _ = conn.Write([]byte("read input2.txt\r\n"))
-	line, _ = reader.ReadBytes('\r')
-	_, _ = reader.ReadBytes('\n')
-	line2, _ := reader.ReadBytes('\r')
-	_, _ = reader.ReadBytes('\n')
-	if string(line)+"\n"+string(line2)+"\n" == "ERR_FILE_NOT_FOUND\r\n" {
-		t.Error(string(line) + "\n" + string(line2) + "\n")
+	line, _ = reader.ReadBytes('\n')
+	line2, _ := reader.ReadBytes('\n')
+
+	if string(line)+string(line2) == "ERR_FILE_NOT_FOUND\r\n" {
+		t.Error(string(line) + string(line2))
 	}
 
 	time.Sleep(4 * time.Second)
 	_, _ = conn.Write([]byte("read input2.txt\r\n"))
-	line, _ = reader.ReadBytes('\r')
-	_, _ = reader.ReadBytes('\n')
-	if string(line)+"\n" != "ERR_FILE_NOT_FOUND\r\n" {
+
+	line, _ = reader.ReadBytes('\n')
+	if string(line) != "ERR_FILE_NOT_FOUND\r\n" {
 		t.Error(string(line) + "\r\n")
 	}
 
