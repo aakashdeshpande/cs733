@@ -215,13 +215,14 @@ OUTER:
 			conn.Write([]byte("OK " + strconv.FormatInt(version+1, 10) + "\r\n"))
 
 			// Write expiry time
+			var exp int64  = 0
 			if len(commands) > 3 {
-				exp, _ := strconv.ParseInt(commands[3], 10, 64)
-				if exp == 0 {
-					err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(-1, 10)), nil)
-				} else {
-					err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(time.Now().Unix()+exp, 10)), nil)
-				}
+				exp, _ = strconv.ParseInt(commands[3], 10, 64)
+			}
+			if exp == 0 {
+				err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(-1, 10)), nil)
+			} else {
+				err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(time.Now().Unix()+exp, 10)), nil)
 			}
 
 			mutex.Unlock()
@@ -270,13 +271,14 @@ OUTER:
 			conn.Write([]byte("OK " + strconv.FormatInt(version, 10) + "\r\n"))
 
 			// Write expiry time
+			var exp int64  = 0
 			if len(commands) > 4 {
-				exp, _ := strconv.ParseInt(commands[4], 10, 64)
-				if exp == 0 {
-					err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(-1, 10)), nil)
-				} else {
-					err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(time.Now().Unix()+exp, 10)), nil)
-				}
+				exp, _ = strconv.ParseInt(commands[4], 10, 64)
+			}
+			if exp == 0 {
+				err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(-1, 10)), nil)
+			} else {
+				err = expiry.Put([]byte(fileName), []byte(strconv.FormatInt(time.Now().Unix()+exp, 10)), nil)
 			}
 
 			mutex.Unlock()

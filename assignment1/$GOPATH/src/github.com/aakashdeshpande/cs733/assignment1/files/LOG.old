@@ -1,0 +1,14 @@
+=============== Jan 21, 2016 (IST) ===============
+10:14:31.995452 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+10:14:31.995680 db@open opening
+10:14:31.995813 journal@recovery F·1
+10:14:31.998150 journal@recovery recovering @9
+10:14:32.000646 memdb@flush created L0@11 N·7 S·187B "inp..txt,v126":"inp..txt,v120"
+10:14:32.001548 db@janitor F·6 G·0
+10:14:32.001575 db@open done T·5.884085ms
+10:14:32.001660 table@compaction L0·3 -> L1·0 S·46KiB Q·127
+10:14:32.024697 table@build created L1@14 N·2 S·144B "hi.txt,v1":"inp..txt,v126"
+10:14:32.028316 table@compaction committed F-2 S-46KiB Ke·0 D·118 T·26.580646ms
+10:14:32.028467 table@remove removed @11
+10:14:32.028579 table@remove removed @8
+10:14:32.028691 table@remove removed @2
