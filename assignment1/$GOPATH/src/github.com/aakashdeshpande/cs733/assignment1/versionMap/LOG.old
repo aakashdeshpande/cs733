@@ -1,8 +1,16 @@
 =============== Jan 21, 2016 (IST) ===============
-20:00:03.511891 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-20:00:03.512468 db@open opening
-20:00:03.512566 journal@recovery F·1
-20:00:03.512735 journal@recovery recovering @55
-20:00:03.515756 memdb@flush created L0@57 N·114 S·943B "bigfile!,d1722":"inp..txt,d1612"
-20:00:03.516860 db@janitor F·6 G·0
-20:00:03.516896 db@open done T·4.409889ms
+20:47:32.104765 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:47:32.105598 db@open opening
+20:47:32.105935 journal@recovery F·1
+20:47:32.113594 journal@recovery recovering @74
+20:47:32.403386 memdb@flush created L0@76 N·116 S·945B "bigfile!,d2406":"inp..txt,d2293"
+20:47:32.415979 db@janitor F·8 G·0
+20:47:32.416618 table@compaction L0·4 -> L1·1 S·3KiB Q·2408
+20:47:32.416641 db@open done T·311.011311ms
+20:47:32.429030 table@build created L1@79 N·2 S·140B "hi.txt,v2292":"inp..txt,v2407"
+20:47:32.431203 table@compaction committed F-4 S-3KiB Ke·0 D·450 T·14.413087ms
+20:47:32.431449 table@remove removed @76
+20:47:32.431586 table@remove removed @73
+20:47:32.431725 table@remove removed @70
+20:47:32.431849 table@remove removed @67
+20:47:32.431971 table@remove removed @66

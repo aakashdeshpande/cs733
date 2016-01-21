@@ -197,6 +197,10 @@ OUTER:
 
 			// NUmber of bytes to be written to the file
 			fileSize, err := strconv.ParseInt(commands[2], 10, 64)
+			if err != nil {
+				conn.Write([]byte("ERR_CMD_ERR\r\n"))
+				continue OUTER
+			}
 			fileSize = fileSize + int64(len([]byte("\r\n")))
 
 			file := write(conn, fileSize, remainder, bufferRead, buf, &sLarge)
@@ -235,6 +239,16 @@ OUTER:
 				continue OUTER
 			}
 
+			// Number of bytes to be written to file
+			fileSize, err := strconv.ParseInt(commands[3], 10, 64)
+			if err != nil {
+				conn.Write([]byte("ERR_CMD_ERR\r\n"))
+				continue OUTER
+			}
+			fileSize = fileSize + int64(len([]byte("\r\n")))
+
+			file := write(conn, fileSize, remainder, bufferRead, buf, &sLarge)
+
 			mutex.Lock()
 
 			// Get file version
@@ -258,12 +272,6 @@ OUTER:
 				mutex.Unlock()
 				continue OUTER
 			}
-
-			// Number of bytes to be written to file
-			fileSize, err := strconv.ParseInt(commands[3], 10, 64)
-			fileSize = fileSize + int64(len([]byte("\r\n")))
-
-			file := write(conn, fileSize, remainder, bufferRead, buf, &sLarge)
 
 			err = files.Put([]byte(fileName), file, nil)
 
