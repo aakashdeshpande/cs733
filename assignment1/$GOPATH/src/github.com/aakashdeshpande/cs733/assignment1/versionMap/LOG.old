@@ -1,16 +1,8 @@
 =============== Jan 21, 2016 (IST) ===============
-20:47:32.104765 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-20:47:32.105598 db@open opening
-20:47:32.105935 journal@recovery F·1
-20:47:32.113594 journal@recovery recovering @74
-20:47:32.403386 memdb@flush created L0@76 N·116 S·945B "bigfile!,d2406":"inp..txt,d2293"
-20:47:32.415979 db@janitor F·8 G·0
-20:47:32.416618 table@compaction L0·4 -> L1·1 S·3KiB Q·2408
-20:47:32.416641 db@open done T·311.011311ms
-20:47:32.429030 table@build created L1@79 N·2 S·140B "hi.txt,v2292":"inp..txt,v2407"
-20:47:32.431203 table@compaction committed F-4 S-3KiB Ke·0 D·450 T·14.413087ms
-20:47:32.431449 table@remove removed @76
-20:47:32.431586 table@remove removed @73
-20:47:32.431725 table@remove removed @70
-20:47:32.431849 table@remove removed @67
-20:47:32.431971 table@remove removed @66
+22:54:33.905373 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+22:54:33.905824 db@open opening
+22:54:33.905920 journal@recovery F·1
+22:54:33.906135 journal@recovery recovering @116
+22:54:33.918889 memdb@flush created L0@118 N·112 S·919B "bigfile!,d3216":"inp..txt,d3107"
+22:54:33.920624 db@janitor F·7 G·0
+22:54:33.920672 db@open done T·14.822933ms

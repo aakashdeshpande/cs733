@@ -1,0 +1,164 @@
+RAFT : Checkpoint 1
+
+120050005
+Aakash Deshpande
+
+State : Follower
+=====================================================
+
+on VoteReq(from, term, candidateId, lastLogIndex, lastLogTerm)
+	if  sm.term <= msg.term &&
+	(sm.votedFor[msg.term] == nil or sm.votedFor[msg.term] == msg.candidateId) \\ Should votedFor be linked to the term?
+		if candidate log is at least as up-to-date as receiver's log,
+			sm.term = msg.term
+			sm.votedFor[sm.term] = msg.candidateId
+			action = Send(msg.from, VoteResp(sm.term, voteGranted =yes))
+	Otherwise, reject vote:
+			action = Send(msg.from, VoteResp(msg.term, voteGranted =no))
+	Alarm(sm.ElectionTimeout)
+
+on AppendEntriesReq(leaderId, term, lastLogIndex, lastLogTerm, entries, leaderCommit)
+	if sm.term < msg.term
+		change State = Follower
+		sm.term = msg.term
+
+	if  sm.term > msg.term 
+		action = Send(msg.leaderID, AppendEntriesResp(sm.term, success =no))
+	else if  (sm.log[msg.lastLogIndex].term != msg.lastLogTerm)	
+		action = Send(msg.leaderID, AppendEntriesResp(sm.term, success =no))
+	else
+		if  sm.lastLogIndex > msg.lastLogIndex 
+			sm.lastLogIndex = msg.lastLogIndex
+		LogStore(sm.lastLogIndex + 1, entries)	
+		sm.lastLogIndex ++
+		sm.lastLogTerm = sm.term
+		action = Send(msg.leaderID, AppendEntriesResp(sm.Id, sm.term, sm.term, success =yes))
+		if sm.commitIndex < msg.leaderCommit	\\ with success or outside?
+			commitIndex = min(leaderCommit, index of last new entry)
+			Commit(index, data, err)
+	Alarm(t) // To reset only on success?	
+	
+on Timeout
+	change State = Candidate
+	sm.term ++
+	sm.votedFor[sm.term] = sm.Id
+	sm.votesRecieved = 1
+	for (i=0; i<sm.numberOfServers; i++)
+		if (i != sm.Id)
+			Send(i, VoteReq(sm.Id, sm.term, sm.Id, sm.lastLogIndex, sm.lastLogTerm))
+	Alarm(t)		
+
+State : Candidate
+=====================================================
+
+on VoteReq(from, term, candidateId, lastLogIndex, lastLogTerm)
+	if sm.term < msg.term
+		change State = Follower
+		sm.term = msg.term
+		action = Send(msg.from, VoteResp(sm.term, voteGranted =yes))
+		Alarm(sm.ElectionTimeout) 
+	else	
+		action = Send(msg.from, VoteResp(sm.term, voteGranted =no))
+
+on AppendEntriesReq(leaderId, term, lastLogIndex, lastLogTerm, entries, leaderCommit)
+	if sm.term <= msg.term
+		change State = Follower
+		sm.term = msg.term
+
+	if  sm.term > msg.term 
+		action = Send(msg.leaderID, AppendEntriesResp(sm.term, success =no))
+	else if  (sm.log[msg.lastLogIndex].term != msg.lastLogTerm)	
+		action = Send(msg.leaderID, AppendEntriesResp(sm.term, success =no))
+	else
+		if  sm.lastLogIndex > msg.lastLogIndex 
+			sm.lastLogIndex = msg.lastLogIndex
+		LogStore(sm.lastLogIndex + 1, entries)	
+		sm.lastLogIndex ++
+		action = Send(msg.leaderID, AppendEntriesResp(sm.term, success =yes))
+		if sm.commitIndex < msg.leaderCommit	\\ with success or outside?
+			commitIndex = min(leaderCommit, index of last new entry)
+			Commit(index, data, err)
+	Alarm(t)
+
+on VoteResp(term, voteGranted)
+	if sm.term == term && voteGranted
+		sm.votesRecieved ++	
+		if sm.votesRecieved > sm.numberOfServers/2	
+			change State = Leader
+			nextIndex[], matchIndex[]
+			for (i=0; i<sm.numberOfServers; i++)
+				if (i != sm.Id) 
+					nextIndex[i] = sm.lastLogIndex + 1
+					matchIndex[i] = 0
+					send(i, AppendEntriesReq(sm.Id, sm.term, sm.lastLogIndex, sm.lastLogTerm, [], sm.commitIndex))
+			Alarm(t)		
+	
+on Timeout
+	change State = Candidate
+	sm.term ++
+	sm.votedFor[sm.term] = sm.Id
+	sm.votesRecieved = 1
+	for (i=0; i<sm.numberOfServers; i++)
+		if (i != sm.Id)
+			Send(i, VoteReq(sm.Id, sm.term, sm.Id, sm.lastLogIndex, sm.lastLogTerm))
+	Alarm(t)	
+
+State : Leader
+=====================================================
+
+on VoteReq(from, term, candidateId, lastLogIndex, lastLogTerm)
+    if msg.term > sm.term
+        sm.term = msg.term 
+        change State = Follower
+        Send(sm.Id, VoteReq(msg.from, msg.term, msg.candidateId, msg.lastLogIndex, msg.lastLogTerm))
+	else       
+		action = Send(msg.from, VoteResp(msg.term, voteGranted =no))
+
+
+on Append(data:[]byte)
+    LogStore(sm.lastLogIndex + 1, data []byte)
+    for (i=0; i<sm.numberOfServers; i++)
+		if (i != sm.Id) 
+			nextIndex[i] = sm.lastLogIndex + 1
+			matchIndex[i] = 0
+			send(i, AppendEntriesReq(sm.Id, sm.term, sm.lastLogIndex, sm.lastLogTerm, byte, sm.commitIndex))
+	    sm.lastLogIndex ++		
+	    sm.lastLogTerm = sm.term
+
+on Timeout
+    for (i=0; i<sm.numberOfServers; i++)
+		if (i != sm.Id) 
+			nextIndex[i] = sm.lastLogIndex + 1
+			matchIndex[i] = 0
+			send(i, AppendEntriesReq(sm.Id, sm.term, sm.lastLogIndex, sm.lastLogTerm, [], sm.commitIndex))
+
+on AppendEntriesReq(leaderId, term, prevLogIndex, prevLogTerm, entries[], leaderCommit)
+    if msg.term > sm.term
+        sm.term = msg.term 
+        change state = Follower
+        send(i, AppendEntriesReq(msg.Id, msg.term, msg.lastLogIndex, msg.lastLogTerm, msg.entries, msg.commitIndex))
+
+on AppendEntriesResp(from, term, index, success)
+	if success
+		nextIndex[msg.from] = msg.index 
+        matchIndex[msg.from] = msg.index - 1
+        sm.acksRecieved[msg.index - 1] ++
+        if sm.acksRecieved[msg.index - 1] > sm.numberOfServers/2
+        	if sm.commitIndex < msg.index - 1 && sm.term == sm.log[msg.index - 1].term
+        		sm.commitIndex = msg.index - 1
+        		Commit(msg.index - 1, data, err = nil)
+
+    else //If AppendEntries fails because of log inconsistency:
+        nextIndex[msg.from] --
+
+    if sm.lastLogIndex ≥ sm.nextIndex[msg.from] 
+    	send(i, AppendEntriesReq(sm.Id, sm.term, sm.nextIndex[msg.from] - 1, sm.log[sm.nextIndex[msg.from] - 1].term,
+    	sm.log[sm.nextIndex[msg.from]:sm.lastLogIndex], sm.commitIndex))    
+
+on VoteResp(term, voteGranted):
+    if msg.term > sm.term
+    	error
+
+
+
+	
