@@ -128,8 +128,6 @@ on Append(data:[]byte)
 on Timeout
     for (i=0; i<sm.numberOfServers; i++)
 		if (i != sm.Id) 
-			nextIndex[i] = sm.lastLogIndex + 1
-			matchIndex[i] = 0
 			send(i, AppendEntriesReq(sm.Id, sm.term, sm.lastLogIndex, sm.lastLogTerm, [], sm.commitIndex))
 
 on AppendEntriesReq(leaderId, term, prevLogIndex, prevLogTerm, entries[], leaderCommit)
