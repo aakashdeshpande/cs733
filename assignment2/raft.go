@@ -1,6 +1,6 @@
 package main
 
-import "fmt"	
+//import "fmt"	
 import "time"
 import "math/rand"
 //import "github.com/syndtr/goleveldb/leveldb"
@@ -9,7 +9,6 @@ var serverChannel []chan command
 var	s1 rand.Source = rand.NewSource(time.Now().UnixNano())
 var	r1 *rand.Rand = rand.New(s1)
 
-
 func min(a int64, b int64) int64{
 	if(a > b){ 
 		return a
@@ -17,6 +16,8 @@ func min(a int64, b int64) int64{
 		return b
 	}
 }
+
+/**************************************************************/
 
 type command interface {
     commandName() string
@@ -101,6 +102,64 @@ func NewAppend(data []byte) Append{
 	return c
 }
 
+/**************************************************************/
+
+type events interface {
+    eventName() string
+}
+
+type Send struct{
+	to 	 int64
+	c 	 command
+}
+
+func NewSend(id int64, c command) Send{
+	var s Send
+	s.to = id
+	s.c = c
+	return s
+}
+
+type Alarm struct{
+	to 	 	 int64
+	duration time.Duration
+}
+
+func NewAlarm(id int64, duration time.Duration) Alarm{
+	var s Alarm
+	s.to = id
+	s.duration = duration
+	return s
+}
+
+type Commit struct{
+	index 	 int64
+	data 	 []byte
+	err 	 []byte
+}
+
+func NewCommit(index int64, data []byte, err []byte) Commit{
+	var s Commit
+	s.index = index
+	s.data = data
+	s.err = err
+	return s
+}
+
+type LogStore struct{
+	index 	 int64
+	data 	 []byte
+}
+
+func NewLogStore(index int64, data []byte) LogStore{
+	var s LogStore
+	s.index = index
+	s.data = data
+	return s
+}
+
+/**************************************************************/
+
 type StateMachine struct {
 	servers 	  int64
 	id 			  int64
@@ -110,19 +169,21 @@ type StateMachine struct {
 	lastLogTerm   int64
 	log  		  [][]byte	
 	logTerm 	  map[int64]int64
-	votedFor 	  map[int64]int64  		// Should votedFor be linked to the term?
+	votedFor 	  int64  		// Should votedFor be linked to the term?
 	commitIndex   int64		
 	netCh		  chan command
 	clientCh	  chan command	
-	timer 	 	  *time.Timer
+	//timer 	 	  *time.Timer
+	timeCh 		  chan bool
+	actionCh	  chan events
 	electionTimeout time.Duration
 	votesRecieved int64
 	nextIndex	  map[int64]int64
 	matchIndex	  map[int64]int64
-	acksRecieved  map[int64]int64
+	//acksRecieved  map[int64]int64
 }
 
-func NewStateMachine(servers int64, id int64, netCh chan command, clientCh chan command, electionTimeout int) *StateMachine{
+func NewStateMachine(servers int64, id int64, netCh chan command, clientCh chan command, timeCh chan bool, actionCh chan events) *StateMachine{
 	var sm *StateMachine = new(StateMachine)
 	sm.servers = servers
 	sm.id = id
@@ -132,83 +193,107 @@ func NewStateMachine(servers int64, id int64, netCh chan command, clientCh chan 
 	sm.lastLogTerm = 0
 	sm.log = make([][]byte, 10000000)
 	sm.logTerm = make(map[int64]int64)
-	sm.votedFor = make(map[int64]int64)
+	sm.votedFor = -1
 	sm.commitIndex = -1
 	sm.netCh = netCh
 	sm.clientCh = clientCh
-	sm.electionTimeout = time.Millisecond * time.Duration(electionTimeout)
+	sm.timeCh = timeCh
+	sm.actionCh = actionCh
+	sm.electionTimeout = time.Millisecond * 500 //time.Duration(electionTimeout)
 	sm.votesRecieved = 0
 	sm.nextIndex = make(map[int64]int64) 
 	sm.matchIndex = make(map[int64]int64)
-	sm.acksRecieved = make(map[int64]int64)
+	//sm.acksRecieved = make(map[int64]int64)
 	return sm		
 }
 
-func Send(id int64, c command) bool {
-	go func(){
-		serverChannel[id] <- c	
-	}()
+/**************************************************************/
+
+func (c Send) eventName() string{
+	return "Send"
+}
+
+func (c Alarm) eventName() string{
+	return "Alarm"
+}
+
+func (c Commit) eventName() string{
+	return "Commit"
+}
+
+func (c LogStore) eventName() string{
+	return "LogStore"
+}
+
+/**************************************************************/
+
+func (sm *StateMachine) Send(id int64, c command) bool {
+	//go func(){
+		sm.actionCh <- NewSend(id, c)	
+	//}()
 	return true	
 }
 
 func (sm *StateMachine) Alarm(duration time.Duration) {
 	if sm.status == "Leader" {
-		sm.timer.Reset(duration) //500 + r1.Intn(3000)
+		sm.actionCh <- NewAlarm(sm.id, duration)
 	} else if sm.status == "Candidate" {
-		sm.timer.Reset((duration + time.Duration(r1.Intn(1000)))*5)
+		sm.actionCh <- NewAlarm(sm.id, (duration + time.Duration(r1.Intn(1000)))*5)
 	} else {
-		sm.timer.Reset(duration + time.Duration(r1.Intn(1000)))
+		sm.actionCh <- NewAlarm(sm.id, duration + time.Duration(r1.Intn(1000)))
 	}
 }
 
 func (sm *StateMachine) Commit(index int64) {
-	if sm.status == "Leader" {
-		fmt.Println("Commited by leader ", sm.id, "index ", index)
-	}
+	sm.actionCh <- NewCommit(index, sm.log[index], nil)
 }
 
 func (sm *StateMachine) LogStore(index int64, entries []byte) {
 	sm.log[index] = entries
 	sm.logTerm[index] = sm.term
+	sm.actionCh <- NewLogStore(index, entries)
 }
+
+/**************************************************************/
 
 func (sm *StateMachine) Timeout() {
 	if sm.status == "Leader" {
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
-				Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.commitIndex))
+				sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.commitIndex))
 			}
 		}
 		sm.Alarm(sm.electionTimeout)
 	} else {
 		sm.status = "Candidate"
 		sm.term ++
-		sm.votedFor[sm.term] = sm.id
+		sm.votedFor = sm.id
 		sm.votesRecieved = 1
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
-				Send(i, NewVoteReq(sm.id, sm.term, sm.id, sm.lastLogIndex, sm.lastLogTerm))
+				sm.Send(i, NewVoteReq(sm.id, sm.term, sm.id, sm.lastLogIndex, sm.lastLogTerm))
 			}
 		}
 		sm.Alarm(sm.electionTimeout)	
 	}	
 }
 
+/**************************************************************/
+
 func (c VoteRequest) commandName() string{
 	return "VoteRequest"
 }
 
 func (msg VoteRequest) execute(sm *StateMachine) {
-	_, ok := sm.votedFor[msg.term]
-	if  sm.term <= msg.term && (ok == false || sm.votedFor[msg.term] == msg.from) && //changed
+	if  sm.term <= msg.term && (sm.votedFor == -1 || sm.votedFor == msg.from) && //changed
 		(sm.lastLogTerm < msg.lastLogTerm || (sm.lastLogTerm == msg.lastLogTerm && sm.lastLogIndex <= msg.lastLogIndex)){ 
 		sm.term = msg.term
 		sm.status = "Follower"
-		sm.votedFor[msg.term] = msg.from
-		Send(msg.from, NewVoteResp(msg.term, true))
+		sm.votedFor = msg.from
+		sm.Send(msg.from, NewVoteResp(msg.term, true))
 		sm.Alarm(sm.electionTimeout)
 	} else{
-		Send(msg.from, NewVoteResp(msg.term, false))
+		sm.Send(msg.from, NewVoteResp(msg.term, false))
 	}
 }
 
@@ -222,16 +307,13 @@ func (msg VoteResponse) execute(sm *StateMachine) {
 			sm.votesRecieved ++	
 			if sm.votesRecieved > sm.servers/2	{
 				sm.status = "Leader"
-				fmt.Println("Elected Leader ", sm.id)
+				//fmt.Println("Elected Leader ", sm.id)
 				for i:=int64(0); i<sm.servers; i++ {
 					if (i != sm.id) {
 						sm.nextIndex[i] = sm.lastLogIndex + 1
-						sm.matchIndex[i] = 0
-						Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.commitIndex))
+						sm.matchIndex[i] = -1
+						sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.commitIndex))
 					}
-				}
-				for i:=int64(0); i<=sm.lastLogIndex; i++ {
-					sm.acksRecieved[i] = 0
 				}
 				sm.Alarm(sm.electionTimeout)	
 			}
@@ -248,13 +330,14 @@ func (msg AppendEntriesRequest) execute(sm *StateMachine) {
 	if sm.term < msg.term || (sm.status == "Candidate" && sm.term == msg.term) {
 		sm.status = "Follower"
 		sm.term = msg.term
+		sm.votedFor = -1
 		sm.Alarm(sm.electionTimeout) // To reset only on success?
 	} 
 
 	if  sm.term > msg.term {
-		Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
+		sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
 	} else if (sm.logTerm[msg.lastLogIndex] != msg.lastLogTerm)	{
-		Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
+		sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
 	} else {
 		if(msg.entries != nil){
 			if  sm.lastLogIndex > msg.lastLogIndex {
@@ -263,7 +346,7 @@ func (msg AppendEntriesRequest) execute(sm *StateMachine) {
 			sm.LogStore(sm.lastLogIndex + 1, msg.entries)	
 			sm.lastLogIndex ++
 			sm.lastLogTerm = sm.term
-			Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, true))
+			sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, true))
 		}
 
 		if sm.commitIndex < msg.leaderCommit {	// with success or outside?
@@ -285,11 +368,18 @@ func (msg AppendEntriesResponse) execute(sm *StateMachine) {
 		if msg.success {
 			sm.matchIndex[msg.from] = msg.index 
 	        sm.nextIndex[msg.from] = msg.index + 1
-	        sm.acksRecieved[msg.index] ++
-	        if sm.acksRecieved[msg.index] > sm.servers/2 {
+
+	        count := int64(1)
+	        for i:=int64(0); i<sm.servers; i++ {
+				if (i != sm.id) {
+					if(sm.matchIndex[i] >= sm.matchIndex[msg.from]) { count++ }
+				}
+			}
+
+	        if count > sm.servers/2 {
 	        	if sm.commitIndex < msg.index && sm.term == sm.logTerm[msg.index] {
 	        		sm.commitIndex = msg.index 
-	        		sm.Commit(sm.commitIndex) //, data, err) Commit(msg.index - 1, data, err = nil)
+	        		sm.Commit(sm.commitIndex) 
 	        	}
 	        }
 	    } else { //If AppendEntries fails because of log inconsistency
@@ -297,17 +387,20 @@ func (msg AppendEntriesResponse) execute(sm *StateMachine) {
 	        sm.nextIndex[msg.from] = min(sm.nextIndex[msg.from], 0)
 	    }
 	    if sm.lastLogIndex >= sm.nextIndex[msg.from] {
-	    	Send(msg.from, NewAppendEntriesReq(sm.id, sm.term, sm.nextIndex[msg.from] - 1, sm.logTerm[sm.nextIndex[msg.from] - 1],
+	    	sm.Send(msg.from, NewAppendEntriesReq(sm.id, sm.term, sm.nextIndex[msg.from] - 1, sm.logTerm[sm.nextIndex[msg.from] - 1],
 	    	sm.log[sm.nextIndex[msg.from]], sm.commitIndex))  
 	    }
     } else{
     	if sm.term < msg.term {
 			sm.status = "Follower"
 			sm.term = msg.term
+			sm.votedFor = -1
 			sm.Alarm(sm.electionTimeout) // To reset only on success?
 		}
     }
 }
+
+/**************************************************************/
 
 func (c Append) commandName() string{
 	return "Append"
@@ -316,60 +409,63 @@ func (c Append) commandName() string{
 func (msg Append) execute(sm *StateMachine) {
 	if sm.status == "Leader" {
 		sm.LogStore(sm.lastLogIndex + 1, msg.data)
-		sm.acksRecieved[sm.lastLogIndex + 1] = 1
+		//sm.acksRecieved[sm.lastLogIndex + 1] = 1
 	    for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
-				Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, msg.data, sm.commitIndex)) // Send next index
+				sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, msg.data, sm.commitIndex)) // Send next index
 			}
 		}
 		sm.lastLogIndex ++		
 		sm.lastLogTerm = sm.term
-		//fmt.Println("Done Leader")
 	} 
 }
 
+/**************************************************************/
+
+
 func (sm *StateMachine) eventLoop(){
 
-    sm.timer = time.NewTimer(sm.electionTimeout + time.Duration(r1.Intn(1000))) 
+    //sm.timer = time.NewTimer(sm.electionTimeout + time.Duration(r1.Intn(1000))) 
 	for { 
 		if sm.status == "Leader" {
 			select {
 				case appendMsg := <- sm.clientCh :
-					fmt.Println("Started ", sm.id)
+					//fmt.Println("Started ", sm.id)
 					appendMsg.execute(sm)
 				case peerMsg := <- sm.netCh :	
 					peerMsg.execute(sm)	
-				case <- sm.timer.C :
+				case <- sm.timeCh :
 					sm.Timeout()
 			}
 		} else {
 			select {
 				case peerMsg := <- sm.netCh :	
 					peerMsg.execute(sm)	
-				case <- sm.timer.C :
+				case <- sm.timeCh :
 					sm.Timeout()	
 			}
 		}
 	}
 }
 
-func serverMain(clientCh chan command){
+func serverMain(netCh chan command, clientCh chan command, timeCh chan bool, actionCh chan events){
 	var servers int64 = 5
+	//for i :=int64(0); i<5; i++ {
+		sm := NewStateMachine(servers, 0, netCh, clientCh, timeCh, actionCh)
+		go sm.eventLoop()
+	//}
+}
 
-	serverChannel = make([]chan command, servers)
+func main(){
 	// Database to store currentTerm
 	//currentTerm, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment2/currentTerm", nil)
 	// Database to store votedFor
 	//votedFor, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment2/votedFor", nil)
 
-	for i :=int64(0); i<5; i++ {
-		serverChannel[i] = make(chan command)
-		sm := NewStateMachine(servers, i, serverChannel[i], clientCh, 500)
-		go sm.eventLoop()
-	}
-}
-
-func main(){
 	var clientCh chan command = make(chan command)
-	serverMain(clientCh);
+	var netCh chan command = make(chan command)
+	var actionCh chan events = make(chan events)
+	var timeCh chan bool = make(chan bool)
+
+	serverMain(netCh, clientCh, timeCh, actionCh);
 }
