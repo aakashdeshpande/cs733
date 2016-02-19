@@ -2,7 +2,7 @@ package main
 
 import (
 	"testing"
-	"time"
+	//"time"
 )
 
 //import "fmt"
@@ -33,20 +33,16 @@ func TestStateChange(t *testing.T) {
 
 	// Candidate election
 	netCh <- NewVoteResp(sm.term, true)
-	time.Sleep(time.Second)
-	if sm.status != "Candidate" {
-		t.Error("Status incorrect")
-	}
 
 	// Leader election
 	netCh <- NewVoteResp(sm.term, true)
-	time.Sleep(time.Second)
-	if sm.status != "Leader" {
-		t.Error("Status incorrect")
-	}
 
 	for i:=0; i<5; i++ {
 		<- actionCh
+	}
+
+	if sm.status != "Leader" {
+		t.Error("Status incorrect")
 	}
 
 	// Append new message
@@ -110,19 +106,15 @@ func TestRewrite(t *testing.T) {
 	}
 
 	netCh <- NewVoteResp(sm.term, true)
-	time.Sleep(time.Second)
-	if sm.status != "Candidate" {
-		t.Error("Status incorrect")
-	}
 
 	netCh <- NewVoteResp(sm.term, true)
-	time.Sleep(time.Second)
-	if sm.status != "Leader" {
-		t.Error("Status incorrect")
-	}
 
 	for i:=0; i<5; i++ {
 		<- actionCh
+	}
+
+	if sm.status != "Leader" {
+		t.Error("Status incorrect")
 	}
 
 	clientCh <- NewAppend([]byte("Msg"))
@@ -153,6 +145,49 @@ func TestRewrite(t *testing.T) {
 		t.Error("Log incorrect")
 	} 
 
+}
+
+func TestElection(t *testing.T) {
+
+	var clientCh chan command = make(chan command)
+	var netCh chan command = make(chan command)
+	var actionCh chan events = make(chan events)
+	var timeCh chan bool = make(chan bool)
+	sm := NewStateMachine(5, 0, netCh, clientCh, timeCh, actionCh)
+	go sm.eventLoop()
+
+	// Follower timeout
+	timeCh <- true
+
+	for i:=0; i<5; i++ {
+		<- actionCh
+	}
+
+	netCh <- NewVoteResp(sm.term, false)
+
+	netCh <- NewVoteResp(sm.term, false)
+
+	netCh <- NewVoteResp(sm.term, false)
+
+	// Check election rejection 
+	c := <- actionCh	
+	if c.eventName() != "Alarm" {
+		t.Error("Timeout incorrect")
+	}
+	
+	if sm.status != "Follower" {
+		t.Error("Status incorrect")
+	}
+
+	netCh <- NewAppendEntriesReq(4, sm.term, 0, 0, nil, 0, 1)
+
+	<- actionCh	
+	<- actionCh	
+
+	// Commit monotonicity and correctness
+	if sm.commitIndex != -1 {
+		t.Error("Commit incorrect")
+	}
 }
 
 // Serial check of leader and commit

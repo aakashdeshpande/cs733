@@ -10,7 +10,7 @@ var	s1 rand.Source = rand.NewSource(time.Now().UnixNano())
 var	r1 *rand.Rand = rand.New(s1)
 
 func min(a int64, b int64) int64{
-	if(a > b){ 
+	if(a < b){ 
 		return a
 	} else{
 		return b
@@ -180,6 +180,7 @@ type StateMachine struct {
 	actionCh	  chan events
 	electionTimeout time.Duration
 	votesRecieved int64
+	votesLost	  int64
 	nextIndex	  map[int64]int64
 	matchIndex	  map[int64]int64
 	//acksRecieved  map[int64]int64
@@ -203,6 +204,7 @@ func NewStateMachine(servers int64, id int64, netCh chan command, clientCh chan 
 	sm.actionCh = actionCh
 	sm.electionTimeout = time.Millisecond * 500 //time.Duration(electionTimeout)
 	sm.votesRecieved = 0
+	sm.votesLost = 0
 	sm.nextIndex = make(map[int64]int64) 
 	sm.matchIndex = make(map[int64]int64)
 	//sm.acksRecieved = make(map[int64]int64)
@@ -247,7 +249,11 @@ func (sm *StateMachine) Alarm(duration time.Duration) {
 }
 
 func (sm *StateMachine) Commit(index int64) {
-	sm.actionCh <- NewCommit(index, sm.log[index], nil)
+	if(index != -1) {
+		sm.actionCh <- NewCommit(index, sm.log[index], nil)
+	} else {
+		sm.actionCh <- NewCommit(index, nil, nil)
+	}
 }
 
 func (sm *StateMachine) LogStore(index int64, entries []byte, entryTerm int64) {
@@ -271,6 +277,7 @@ func (sm *StateMachine) Timeout() {
 		sm.term ++
 		sm.votedFor = sm.id
 		sm.votesRecieved = 1
+		sm.votesLost = 0
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
 				sm.Send(i, NewVoteReq(sm.id, sm.term, sm.id, sm.lastLogIndex, sm.lastLogTerm))
@@ -319,7 +326,14 @@ func (msg VoteResponse) execute(sm *StateMachine) {
 				}
 				sm.Alarm(sm.electionTimeout)	
 			}
-		}	
+		} else if sm.term == msg.term && !msg.voteGranted {
+			sm.votesLost ++
+			if sm.votesLost > sm.servers/2	{
+				sm.status = "Follower"
+				sm.votedFor = sm.id
+				sm.Alarm(sm.electionTimeout) // To reset only on success?
+			}
+		}
 	}
 }
 
