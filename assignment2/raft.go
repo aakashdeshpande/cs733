@@ -62,16 +62,18 @@ type AppendEntriesRequest struct {
 	lastLogIndex  int64
 	lastLogTerm   int64
 	entries 	  []byte
+	entryTerm	  int64
 	leaderCommit  int64
 }
 
-func NewAppendEntriesReq(leaderId int64, term int64, lastLogIndex int64, lastLogTerm int64, entries []byte, leaderCommit int64) AppendEntriesRequest {
+func NewAppendEntriesReq(leaderId int64, term int64, lastLogIndex int64, lastLogTerm int64, entries []byte, entryTerm int64, leaderCommit int64) AppendEntriesRequest {
 	var c AppendEntriesRequest
 	c.leaderId = leaderId
 	c.term = term
 	c.lastLogIndex = lastLogIndex
 	c.lastLogTerm = lastLogTerm
 	c.entries = entries
+	c.entryTerm = entryTerm
 	c.leaderCommit = leaderCommit
 	return c
 }
@@ -248,9 +250,9 @@ func (sm *StateMachine) Commit(index int64) {
 	sm.actionCh <- NewCommit(index, sm.log[index], nil)
 }
 
-func (sm *StateMachine) LogStore(index int64, entries []byte) {
+func (sm *StateMachine) LogStore(index int64, entries []byte, entryTerm int64) {
 	sm.log[index] = entries
-	sm.logTerm[index] = sm.term
+	sm.logTerm[index] = entryTerm
 	sm.actionCh <- NewLogStore(index, entries)
 }
 
@@ -260,7 +262,7 @@ func (sm *StateMachine) Timeout() {
 	if sm.status == "Leader" {
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
-				sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.commitIndex))
+				sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.term, sm.commitIndex))
 			}
 		}
 		sm.Alarm(sm.electionTimeout)
@@ -312,7 +314,7 @@ func (msg VoteResponse) execute(sm *StateMachine) {
 					if (i != sm.id) {
 						sm.nextIndex[i] = sm.lastLogIndex + 1
 						sm.matchIndex[i] = -1
-						sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.commitIndex))
+						sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.term, sm.commitIndex))
 					}
 				}
 				sm.Alarm(sm.electionTimeout)	
@@ -334,19 +336,22 @@ func (msg AppendEntriesRequest) execute(sm *StateMachine) {
 		sm.Alarm(sm.electionTimeout) // To reset only on success?
 	} 
 
+	// Check that nextIndex is more than commitIndex
+
 	if  sm.term > msg.term {
 		sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
-	} else if (sm.logTerm[msg.lastLogIndex] != msg.lastLogTerm)	{
+	} else if (msg.lastLogIndex != -1) && 
+	(msg.lastLogIndex < sm.commitIndex || (msg.entries != nil && (msg.lastLogIndex > sm.lastLogIndex) || sm.logTerm[msg.lastLogIndex] != msg.lastLogTerm)) {
 		sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
 	} else {
 		if(msg.entries != nil){
 			if  sm.lastLogIndex > msg.lastLogIndex {
 				sm.lastLogIndex = msg.lastLogIndex
 			}
-			sm.LogStore(sm.lastLogIndex + 1, msg.entries)	
+			sm.LogStore(sm.lastLogIndex + 1, msg.entries, msg.entryTerm)	
 			sm.lastLogIndex ++
 			sm.lastLogTerm = sm.term
-			sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, true))
+			sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, true)) //If overwriting, should this have current term?
 		}
 
 		if sm.commitIndex < msg.leaderCommit {	// with success or outside?
@@ -364,7 +369,12 @@ func (c AppendEntriesResponse) commandName() string{
 
 func (msg AppendEntriesResponse) execute(sm *StateMachine) {
 	//fmt.Println("Response ", msg.leaderId, msg.term, msg.lastLogTerm, msg.lastLogIndex, sm.status, sm.term)
-	if sm.status == "Leader" {
+	if sm.term < msg.term && msg.success == false{
+		sm.status = "Follower"
+		sm.term = msg.term
+		sm.votedFor = -1
+		sm.Alarm(sm.electionTimeout) // To reset only on success?
+	} else if sm.status == "Leader" {
 		if msg.success {
 			sm.matchIndex[msg.from] = msg.index 
 	        sm.nextIndex[msg.from] = msg.index + 1
@@ -388,16 +398,9 @@ func (msg AppendEntriesResponse) execute(sm *StateMachine) {
 	    }
 	    if sm.lastLogIndex >= sm.nextIndex[msg.from] {
 	    	sm.Send(msg.from, NewAppendEntriesReq(sm.id, sm.term, sm.nextIndex[msg.from] - 1, sm.logTerm[sm.nextIndex[msg.from] - 1],
-	    	sm.log[sm.nextIndex[msg.from]], sm.commitIndex))  
+	    	sm.log[sm.nextIndex[msg.from]], sm.logTerm[sm.nextIndex[msg.from]], sm.commitIndex))  
 	    }
-    } else{
-    	if sm.term < msg.term {
-			sm.status = "Follower"
-			sm.term = msg.term
-			sm.votedFor = -1
-			sm.Alarm(sm.electionTimeout) // To reset only on success?
-		}
-    }
+    } 
 }
 
 /**************************************************************/
@@ -408,11 +411,11 @@ func (c Append) commandName() string{
 
 func (msg Append) execute(sm *StateMachine) {
 	if sm.status == "Leader" {
-		sm.LogStore(sm.lastLogIndex + 1, msg.data)
+		sm.LogStore(sm.lastLogIndex + 1, msg.data, sm.term)
 		//sm.acksRecieved[sm.lastLogIndex + 1] = 1
 	    for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
-				sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, msg.data, sm.commitIndex)) // Send next index
+				sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, msg.data, sm.term, sm.commitIndex)) // Send next index
 			}
 		}
 		sm.lastLogIndex ++		
