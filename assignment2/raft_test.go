@@ -119,7 +119,7 @@ func TestStateChange(t *testing.T) {
 
 	netCh <- NewAppendEntriesReq(4, sm.term, 0, 2, nil, 2, 0)
 	c = <- actionCh
-		<- actionCh
+	<- actionCh
 
 	return
 }
@@ -140,7 +140,7 @@ func TestRewrite(t *testing.T) {
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
-		<- actionCh
+	<- actionCh
 
 	netCh <- NewVoteResp(sm.term, true)
 	<- actionCh
@@ -149,12 +149,12 @@ func TestRewrite(t *testing.T) {
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
-	<- actionCh
 
 	// Leader election
 	if sm.status != "Leader" {
 		t.Error("Status incorrect")
 	}
+	<- actionCh
 
 	clientCh <- NewAppend([]byte("Msg"))
 
@@ -279,12 +279,12 @@ func TestLogMonotonicity(t *testing.T) {
 	netCh <- NewAppendEntriesResp(1, sm.term, 0, true)
 	<- actionCh	
 	netCh <- NewAppendEntriesResp(2, sm.term, 0, true)
-	<- actionCh
 
 	// Must commit only if entry of current term has majority
 	if sm.commitIndex != -1 {
 		t.Error("Commit incorrect")
 	}
+	<- actionCh
 
 	return
 
@@ -342,13 +342,12 @@ func TestLogResponse(t *testing.T) {
 	netCh <- NewAppendEntriesResp(3, sm.term, 1, true)
 
 	<- actionCh
-	<- actionCh	
 
 	// Commit monotonicity and correctness
 	if sm.commitIndex != 1 {
 		t.Error("Commit incorrect")
 	}
-
+	<- actionCh	
 }
 
 // Serial check of leader and commit

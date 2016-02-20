@@ -446,6 +446,8 @@ func (msg Append) execute(sm *StateMachine) {
 /**************************************************************/
 
 // Signals end of command processesing on action channel
+// "Done" signal potentially allows event processesing to be called as seperate go routines
+// Multiple go routines not used for this assignment
 func (sm *StateMachine) eventLoop(){
 
     //sm.timer = time.NewTimer(sm.electionTimeout + time.Duration(r1.Intn(1000))) 
