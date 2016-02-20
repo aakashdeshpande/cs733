@@ -15,6 +15,7 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
+// State changes under appropriate conditions from follower to candidate, candidate to leader and vice versa
 func TestStateChange(t *testing.T) {
 
 	var clientCh chan command = make(chan command)
@@ -30,13 +31,39 @@ func TestStateChange(t *testing.T) {
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+	<- actionCh
+
+	netCh <- NewVoteResp(sm.term, false)
+	<- actionCh
+	netCh <- NewVoteResp(sm.term, false)
+	<- actionCh
+	netCh <- NewVoteResp(sm.term, false)
+
+	// Check election rejection 
+	c := <- actionCh	
+	if c.eventName() != "Alarm" {
+		t.Error("Timeout incorrect")
+	}
+	
+	if sm.status != "Follower" {
+		t.Error("Status incorrect")
+	}
+	<- actionCh
+
+	// Follower timeout
+	timeCh <- true
+
+	for i:=0; i<5; i++ {
+		<- actionCh
+	}
+	<- actionCh
 
 	// Candidate election
 	netCh <- NewVoteResp(sm.term, true)
-
+	<- actionCh
 	// Leader election
 	netCh <- NewVoteResp(sm.term, true)
-
+	
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
@@ -44,6 +71,7 @@ func TestStateChange(t *testing.T) {
 	if sm.status != "Leader" {
 		t.Error("Status incorrect")
 	}
+	<- actionCh
 
 	// Append new message
 	clientCh <- NewAppend([]byte("Msg"))
@@ -51,15 +79,18 @@ func TestStateChange(t *testing.T) {
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+	<- actionCh
 
 	// Check log commit on majority and not before
 	netCh <- NewAppendEntriesResp(1, sm.term, 0, true)
+	<- actionCh
 	netCh <- NewAppendEntriesResp(2, sm.term, 0, true)
 
-	c := <- actionCh
+	c = <- actionCh
 	if c.eventName() != "Commit" {
 		t.Error("Commit incorrect")
 	}
+	<- actionCh
 
 	// Leader change
 	netCh <- NewAppendEntriesResp(3, sm.term + 1, 0, false)
@@ -74,6 +105,7 @@ func TestStateChange(t *testing.T) {
 	if c.eventName() != "Alarm" {
 		t.Error("Status incorrect")
 	}
+	<- actionCh
 
 	// Vote request for term that has not seen voting
 	netCh <- NewVoteReq(4, sm.term, 4, 0, 2)
@@ -83,13 +115,16 @@ func TestStateChange(t *testing.T) {
 	if c.eventName() != "Alarm" {
 		t.Error("Status incorrect")
 	}
+	<- actionCh
 
 	netCh <- NewAppendEntriesReq(4, sm.term, 0, 2, nil, 2, 0)
 	c = <- actionCh
+		<- actionCh
 
 	return
 }
 
+// Check log overwritten correctly by new leader and no spurious commits occur
 func TestRewrite(t *testing.T) {
 
 	var clientCh chan command = make(chan command)
@@ -105,14 +140,16 @@ func TestRewrite(t *testing.T) {
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+		<- actionCh
 
 	netCh <- NewVoteResp(sm.term, true)
-
+	<- actionCh
 	netCh <- NewVoteResp(sm.term, true)
 
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+	<- actionCh
 
 	// Leader election
 	if sm.status != "Leader" {
@@ -124,9 +161,10 @@ func TestRewrite(t *testing.T) {
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+	<- actionCh
 
-	// Previous log term dont match, no spurious commit
-	netCh <- NewAppendEntriesReq(4, sm.term + 1, 0, sm.term + 1, nil, sm.term + 1, 0)
+	// Previous log term doesnt match, no spurious commit
+	netCh <- NewAppendEntriesReq(4, sm.term + 1, 0, sm.term + 1, []byte("Other Msg"), sm.term + 1, 0)
 
 	<- actionCh
 	<- actionCh
@@ -134,6 +172,11 @@ func TestRewrite(t *testing.T) {
 	if sm.term != 2 {
 		t.Error("Term incorrect")
 	}
+
+	if sm.commitIndex != -1 {
+		t.Error("Commit incorrect")
+	}
+	<- actionCh
 
 	// Check if previous entry is overwritten by new entry sent by the leader
 	netCh <- NewAppendEntriesReq(4, sm.term, -1, sm.term, []byte("Other Msg"), sm.term, 0)
@@ -147,9 +190,32 @@ func TestRewrite(t *testing.T) {
 		t.Error("Log incorrect")
 	} 
 
+	if sm.commitIndex != 0{
+		t.Error("Commit incorrect")
+	}
+	<- actionCh
+
+	// Check if new leader entries are placed appropriately
+	netCh <- NewAppendEntriesReq(3, sm.term + 1, 0, sm.term, []byte("Msg"), sm.term + 1, 1)
+
+	<- actionCh
+	<- actionCh
+	<- actionCh
+	<- actionCh
+
+	if string(sm.log[1]) != "Msg" {
+		t.Error("Log incorrect")
+	} 
+
+	if sm.commitIndex != 1{
+		t.Error("Commit incorrect")
+	}
+	<- actionCh
+
 }
 
-func TestElection(t *testing.T) {
+// Check montonicity and correctness of logTerm and commitIndex
+func TestLogMonotonicity(t *testing.T) {
 
 	var clientCh chan command = make(chan command)
 	var netCh chan command = make(chan command)
@@ -158,40 +224,73 @@ func TestElection(t *testing.T) {
 	sm := NewStateMachine(5, 0, netCh, clientCh, timeCh, actionCh)
 	go sm.eventLoop()
 
+	// Append entries request with a gap
+	netCh <- NewAppendEntriesReq(4, sm.term, 0, 0, nil, 0, 1)
+
+	<- actionCh	
+	<- actionCh
+
+	// Commit monotonicity and correctness
+	if sm.commitIndex != -1 {
+		t.Error("Commit incorrect")
+	}
+	<- actionCh
+
+	// Correct append entries request 
+	netCh <- NewAppendEntriesReq(4, sm.term, -1, sm.term, []byte("Msg"), sm.term, -1)
+
+	<- actionCh
+	<- actionCh
+	<- actionCh
+
+	if string(sm.log[0]) != "Msg" {
+		t.Error("Log incorrect")
+	} 
+
+	// Commit monotonicity and correctness
+	if sm.commitIndex != -1 {
+		t.Error("Commit incorrect")
+	}
+	<- actionCh
+
 	// Follower timeout
 	timeCh <- true
 
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+	<- actionCh
 
-	netCh <- NewVoteResp(sm.term, false)
+	netCh <- NewVoteResp(sm.term, true)
+	<- actionCh
+	netCh <- NewVoteResp(sm.term, true)
 
-	netCh <- NewVoteResp(sm.term, false)
-
-	netCh <- NewVoteResp(sm.term, false)
-
-	// Check election rejection 
-	c := <- actionCh	
-	if c.eventName() != "Alarm" {
-		t.Error("Timeout incorrect")
+	for i:=0; i<5; i++ {
+		<- actionCh
 	}
-	
-	if sm.status != "Follower" {
+	<- actionCh
+
+	// Leader election
+	if sm.status != "Leader" {
 		t.Error("Status incorrect")
 	}
 
-	netCh <- NewAppendEntriesReq(4, sm.term, 0, 0, nil, 0, 1)
-
+	// Check log commit on majority and not before
+	netCh <- NewAppendEntriesResp(1, sm.term, 0, true)
 	<- actionCh	
-	<- actionCh	
+	netCh <- NewAppendEntriesResp(2, sm.term, 0, true)
+	<- actionCh
 
-	// Commit monotonicity and correctness
+	// Must commit only if entry of current term has majority
 	if sm.commitIndex != -1 {
 		t.Error("Commit incorrect")
 	}
+
+	return
+
 }
 
+// Checking leader log update when some responses are droppped
 func TestLogResponse(t *testing.T) {
 
 	var clientCh chan command = make(chan command)
@@ -207,9 +306,10 @@ func TestLogResponse(t *testing.T) {
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+	<- actionCh
 
 	netCh <- NewVoteResp(sm.term, true)
-
+	<- actionCh
 	netCh <- NewVoteResp(sm.term, true)
 
 	for i:=0; i<5; i++ {
@@ -220,25 +320,29 @@ func TestLogResponse(t *testing.T) {
 	if sm.status != "Leader" {
 		t.Error("Status incorrect")
 	}
+	<- actionCh
 
 	netCh <- NewAppend([]byte("Msg1"))
 
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+	<- actionCh
 
 	netCh <- NewAppend([]byte("Msg2"))
 
 	for i:=0; i<5; i++ {
 		<- actionCh
 	}
+	<- actionCh
 
 	// Accepting later entry, some responses dropped
 	netCh <- NewAppendEntriesResp(2, sm.term, 1, true)
-
+	<- actionCh
 	netCh <- NewAppendEntriesResp(3, sm.term, 1, true)
 
 	<- actionCh
+	<- actionCh	
 
 	// Commit monotonicity and correctness
 	if sm.commitIndex != 1 {
@@ -246,7 +350,6 @@ func TestLogResponse(t *testing.T) {
 	}
 
 }
-
 
 // Serial check of leader and commit
 /*

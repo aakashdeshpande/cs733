@@ -30,3 +30,16 @@ go get github.com/syndtr/goleveldb/leveldb
 	"go run server.go" initiates the server
 	"go test" performs the test written in server_test.go
 
+1] Assignment 2 : Raft State Machine
+
+	a] raft.go
+	Contains a description of the state machine with the following structs:
+		1. events: Interface for output events such as Send, Alarm etc. sent on actionCh
+		2. command: Interface for input events such as VoteReq, AppendEntriesReq, Timeout etc. Messages from other servers come on the netCh. Timeouts are deliverd on timeCh
+		3. stateMachine : Implements all the methods of raft state machine 
+
+	b] raft_test.go	
+	Contains test cases to ensure that state machine behaviour is consistent with the requirements
+
+	In the assignment2 directory, 
+	"go test" performs the test written in raft_test.go

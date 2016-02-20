@@ -160,6 +160,9 @@ func NewLogStore(index int64, data []byte) LogStore{
 	return s
 }
 
+type Done struct{
+}
+
 /**************************************************************/
 
 type StateMachine struct {
@@ -227,6 +230,10 @@ func (c Commit) eventName() string{
 
 func (c LogStore) eventName() string{
 	return "LogStore"
+}
+
+func (c Done) eventName() string{
+	return "Event Processed"
 }
 
 /**************************************************************/
@@ -351,11 +358,10 @@ func (msg AppendEntriesRequest) execute(sm *StateMachine) {
 	} 
 
 	// Check that nextIndex is more than commitIndex
-
 	if  sm.term > msg.term {
 		sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
 	} else if (msg.lastLogIndex != -1) && 
-	(msg.lastLogIndex < sm.commitIndex || (msg.entries != nil && (msg.lastLogIndex > sm.lastLogIndex) || sm.logTerm[msg.lastLogIndex] != msg.lastLogTerm)) {
+	(msg.lastLogIndex < sm.commitIndex || (msg.entries != nil && (msg.lastLogIndex > sm.lastLogIndex || sm.logTerm[msg.lastLogIndex] != msg.lastLogTerm))) {
 		sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
 	} else {
 		if(msg.entries != nil){
@@ -439,7 +445,7 @@ func (msg Append) execute(sm *StateMachine) {
 
 /**************************************************************/
 
-
+// Signals end of command processesing on action channel
 func (sm *StateMachine) eventLoop(){
 
     //sm.timer = time.NewTimer(sm.electionTimeout + time.Duration(r1.Intn(1000))) 
@@ -462,6 +468,8 @@ func (sm *StateMachine) eventLoop(){
 					sm.Timeout()	
 			}
 		}
+		var e Done 
+		sm.actionCh <- e
 	}
 }
 
