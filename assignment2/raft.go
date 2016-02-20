@@ -45,12 +45,14 @@ func NewVoteReq(from int64, term int64, candidateId int64, lastLogIndex int64, l
 
 // The response returned from a server after a vote for a candidate to become a leader.
 type VoteResponse struct {
+	from 		  int64
 	term          int64
 	voteGranted   bool
 }
 
-func NewVoteResp(term int64, voteGranted bool) VoteResponse {
+func NewVoteResp(from int64, term int64, voteGranted bool) VoteResponse {
 	var c VoteResponse
+	c.from = from
 	c.term = term
 	c.voteGranted = voteGranted
 	return c
@@ -182,8 +184,7 @@ type StateMachine struct {
 	timeCh 		  chan bool
 	actionCh	  chan events
 	electionTimeout time.Duration
-	votesRecieved int64
-	votesLost	  int64
+	votesMap	  map[int64]int
 	nextIndex	  map[int64]int64
 	matchIndex	  map[int64]int64
 	//acksRecieved  map[int64]int64
@@ -206,8 +207,7 @@ func NewStateMachine(servers int64, id int64, netCh chan command, clientCh chan 
 	sm.timeCh = timeCh
 	sm.actionCh = actionCh
 	sm.electionTimeout = time.Millisecond * 500 //time.Duration(electionTimeout)
-	sm.votesRecieved = 0
-	sm.votesLost = 0
+	sm.votesMap = make(map[int64]int) 
 	sm.nextIndex = make(map[int64]int64) 
 	sm.matchIndex = make(map[int64]int64)
 	//sm.acksRecieved = make(map[int64]int64)
@@ -237,6 +237,27 @@ func (c Done) eventName() string{
 }
 
 /**************************************************************/
+
+
+func (sm *StateMachine) countOnes() int64{
+	var count int64 = 0
+	for i:=int64(0); i<sm.servers; i++ {
+			if (sm.votesMap[i] == 1) {
+				count ++
+			}
+	}
+	return count;
+}
+
+func (sm *StateMachine) countNeg() int64{
+	var count int64 = 0
+	for i:=int64(0); i<sm.servers; i++ {
+			if (sm.votesMap[i] == -1) {
+				count ++
+			}
+	}
+	return count;
+}
 
 func (sm *StateMachine) Send(id int64, c command) bool {
 	//go func(){
@@ -283,14 +304,16 @@ func (sm *StateMachine) Timeout() {
 		sm.status = "Candidate"
 		sm.term ++
 		sm.votedFor = sm.id
-		sm.votesRecieved = 1
-		sm.votesLost = 0
+		for i:=int64(0); i<sm.servers; i++ {
+			sm.votesMap[i] = 0
+		}
+		sm.votesMap[sm.id] = 1
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
 				sm.Send(i, NewVoteReq(sm.id, sm.term, sm.id, sm.lastLogIndex, sm.lastLogTerm))
 			}
 		}
-		sm.Alarm(sm.electionTimeout)	
+		sm.Alarm(sm.electionTimeout)
 	}	
 }
 
@@ -306,10 +329,10 @@ func (msg VoteRequest) execute(sm *StateMachine) {
 		sm.term = msg.term
 		sm.status = "Follower"
 		sm.votedFor = msg.from
-		sm.Send(msg.from, NewVoteResp(msg.term, true))
+		sm.Send(msg.from, NewVoteResp(sm.id, msg.term, true))
 		sm.Alarm(sm.electionTimeout)
 	} else{
-		sm.Send(msg.from, NewVoteResp(msg.term, false))
+		sm.Send(msg.from, NewVoteResp(sm.id, msg.term, false))
 	}
 }
 
@@ -320,8 +343,8 @@ func (c VoteResponse) commandName() string{
 func (msg VoteResponse) execute(sm *StateMachine) {
 	if sm.status == "Candidate" {
 		if sm.term == msg.term && msg.voteGranted {
-			sm.votesRecieved ++	
-			if sm.votesRecieved > sm.servers/2	{
+			sm.votesMap[msg.from] = 1
+			if sm.countOnes() > sm.servers/2	{
 				sm.status = "Leader"
 				//fmt.Println("Elected Leader ", sm.id)
 				for i:=int64(0); i<sm.servers; i++ {
@@ -334,8 +357,8 @@ func (msg VoteResponse) execute(sm *StateMachine) {
 				sm.Alarm(sm.electionTimeout)	
 			}
 		} else if sm.term == msg.term && !msg.voteGranted {
-			sm.votesLost ++
-			if sm.votesLost > sm.servers/2	{
+			sm.votesMap[msg.from] = -1
+			if sm.countNeg() > sm.servers/2	{
 				sm.status = "Follower"
 				sm.votedFor = sm.id
 				sm.Alarm(sm.electionTimeout) // To reset only on success?

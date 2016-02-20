@@ -25,6 +25,7 @@ func TestStateChange(t *testing.T) {
 	sm := NewStateMachine(5, 0, netCh, clientCh, timeCh, actionCh)
 	go sm.eventLoop()
 
+
 	// Follower timeout
 	timeCh <- true
 
@@ -33,11 +34,13 @@ func TestStateChange(t *testing.T) {
 	}
 	<- actionCh
 
-	netCh <- NewVoteResp(sm.term, false)
+	netCh <- NewVoteResp(1, sm.term, false)
 	<- actionCh
-	netCh <- NewVoteResp(sm.term, false)
+	netCh <- NewVoteResp(2, sm.term, false)
 	<- actionCh
-	netCh <- NewVoteResp(sm.term, false)
+	netCh <- NewVoteResp(3, sm.term, false)
+
+	
 
 	// Check election rejection 
 	c := <- actionCh	
@@ -59,10 +62,10 @@ func TestStateChange(t *testing.T) {
 	<- actionCh
 
 	// Candidate election
-	netCh <- NewVoteResp(sm.term, true)
+	netCh <- NewVoteResp(1, sm.term, true)
 	<- actionCh
 	// Leader election
-	netCh <- NewVoteResp(sm.term, true)
+	netCh <- NewVoteResp(2, sm.term, true)
 	
 	for i:=0; i<5; i++ {
 		<- actionCh
@@ -142,9 +145,9 @@ func TestRewrite(t *testing.T) {
 	}
 	<- actionCh
 
-	netCh <- NewVoteResp(sm.term, true)
+	netCh <- NewVoteResp(1, sm.term, true)
 	<- actionCh
-	netCh <- NewVoteResp(sm.term, true)
+	netCh <- NewVoteResp(2, sm.term, true)
 
 	for i:=0; i<5; i++ {
 		<- actionCh
@@ -261,9 +264,9 @@ func TestLogMonotonicity(t *testing.T) {
 	}
 	<- actionCh
 
-	netCh <- NewVoteResp(sm.term, true)
+	netCh <- NewVoteResp(1, sm.term, true)
 	<- actionCh
-	netCh <- NewVoteResp(sm.term, true)
+	netCh <- NewVoteResp(2, sm.term, true)
 
 	for i:=0; i<5; i++ {
 		<- actionCh
@@ -308,9 +311,9 @@ func TestLogResponse(t *testing.T) {
 	}
 	<- actionCh
 
-	netCh <- NewVoteResp(sm.term, true)
+	netCh <- NewVoteResp(1, sm.term, true)
 	<- actionCh
-	netCh <- NewVoteResp(sm.term, true)
+	netCh <- NewVoteResp(2, sm.term, true)
 
 	for i:=0; i<5; i++ {
 		<- actionCh
