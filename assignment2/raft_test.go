@@ -99,6 +99,7 @@ func TestRewrite(t *testing.T) {
 	sm := NewStateMachine(5, 0, netCh, clientCh, timeCh, actionCh)
 	go sm.eventLoop()
 
+	// Follower timeout
 	timeCh <- true
 
 	for i:=0; i<5; i++ {
@@ -113,6 +114,7 @@ func TestRewrite(t *testing.T) {
 		<- actionCh
 	}
 
+	// Leader election
 	if sm.status != "Leader" {
 		t.Error("Status incorrect")
 	}
@@ -189,6 +191,62 @@ func TestElection(t *testing.T) {
 		t.Error("Commit incorrect")
 	}
 }
+
+func TestLogResponse(t *testing.T) {
+
+	var clientCh chan command = make(chan command)
+	var netCh chan command = make(chan command)
+	var actionCh chan events = make(chan events)
+	var timeCh chan bool = make(chan bool)
+	sm := NewStateMachine(5, 0, netCh, clientCh, timeCh, actionCh)
+	go sm.eventLoop()
+
+	// Follower timeout
+	timeCh <- true
+
+	for i:=0; i<5; i++ {
+		<- actionCh
+	}
+
+	netCh <- NewVoteResp(sm.term, true)
+
+	netCh <- NewVoteResp(sm.term, true)
+
+	for i:=0; i<5; i++ {
+		<- actionCh
+	}
+
+	// Leader election
+	if sm.status != "Leader" {
+		t.Error("Status incorrect")
+	}
+
+	netCh <- NewAppend([]byte("Msg1"))
+
+	for i:=0; i<5; i++ {
+		<- actionCh
+	}
+
+	netCh <- NewAppend([]byte("Msg2"))
+
+	for i:=0; i<5; i++ {
+		<- actionCh
+	}
+
+	// Accepting later entry, some responses dropped
+	netCh <- NewAppendEntriesResp(2, sm.term, 1, true)
+
+	netCh <- NewAppendEntriesResp(3, sm.term, 1, true)
+
+	<- actionCh
+
+	// Commit monotonicity and correctness
+	if sm.commitIndex != 1 {
+		t.Error("Commit incorrect")
+	}
+
+}
+
 
 // Serial check of leader and commit
 /*
