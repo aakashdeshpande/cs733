@@ -30,7 +30,7 @@ go get github.com/syndtr/goleveldb/leveldb
 	"go run server.go" initiates the server
 	"go test" performs the test written in server_test.go
 
-1] Assignment 2 : Raft State Machine
+2] Assignment 2 : Raft State Machine
 
 	a] raft.go
 	Contains a description of the state machine with the following structs:
