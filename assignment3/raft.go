@@ -146,10 +146,10 @@ func NewAlarm(id int64, duration time.Duration) Alarm{
 type Commit struct{
 	index 	 int64
 	data 	 []byte
-	err 	 []byte
+	err 	 error
 }
 
-func NewCommit(index int64, data []byte, err []byte) Commit{
+func NewCommit(index int64, data []byte, err error) Commit{
 	var s Commit
 	s.index = index
 	s.data = data
@@ -292,9 +292,7 @@ func (sm *StateMachine) countNeg() int64{
 }
 
 func (sm *StateMachine) Send(id int64, c command) bool {
-	//go func(){
-		sm.actionCh <- NewSend(id, c)	
-	//}()
+	sm.actionCh <- NewSend(id, c)	
 	return true	
 }
 

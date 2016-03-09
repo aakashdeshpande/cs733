@@ -9,19 +9,13 @@ import "github.com/syndtr/goleveldb/leveldb"
 // data goes in via Append, comes out as CommitInfo from the node's CommitChannel // Index is valid only if err == nil
 type CommitInfo struct { 
 	Data []byte
-	Index int64 // or int .. whatever you have in your code 
+	Index int64  
 	Err error // Err can be errred
-}
-
-type NetConfig struct { 
-	Id 	 int
-	Host string
-	Port int 
 }
 
 // This is an example structure for Config .. change it to your convenience.
 type NodeConfig struct {
-	cluster []NetConfig // Information about all servers, including this.
+	cluster cluster.Config // Information about all servers, including this.
 	Id 		int // this node's id. One of the cluster's entries should match.
 	LogDir 	string // Log file directory for this node
 	ElectionTimeout  int
@@ -29,7 +23,6 @@ type NodeConfig struct {
 }
 
 type Node interface {
-	
 	// Client's message to Raft node 
 	Append([]byte)
 
@@ -69,7 +62,7 @@ type RaftNode struct { // implements Node interface
 	actionCh chan events
 	commitCh chan CommitInfo
 	timeCh 	 chan bool
-	cluster  []NetConfig
+	cluster  cluster.Config
 	server 	 cluster.Server
 	LogDir 	 string // Log file directory for this node
 	lg 		 *log.Log
@@ -78,14 +71,14 @@ type RaftNode struct { // implements Node interface
 func New(config NodeConfig) RaftNode {
 	var rn RaftNode 
 	rn.cluster = config.cluster
-	rn.server, _ = cluster.New(config.Id, configs)
+	rn.server, _ = cluster.New(config.Id, rn.cluster)
 
 	rn.LogDir = config.LogDir
 	rn.lg, _ = log.Open(rn.LogDir + "/Log" + strconv.Itoa(config.Id))
     defer rn.lg.Close()
 
 	rn.clientCh = make(chan command)
-	rn.actionCh = make(chan events, len(rn.cluster) + 5)
+	rn.actionCh = make(chan events, len(rn.cluster.Peers) + 5)
 	rn.timeCh = make(chan bool)
 	rn.commitCh = make(chan CommitInfo)
 
@@ -96,10 +89,7 @@ func New(config NodeConfig) RaftNode {
 	votedFor, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment3/votedFor", nil)
 	defer votedFor.Close()
 
-	rn.sm = NewStateMachine(int64(len(rn.cluster)), int64(config.Id), rn.actionCh, config.ElectionTimeout, currentTerm, votedFor, rn.lg)
-
-	rn.timer = time.NewTimer(rn.sm.electionTimeout + time.Duration(r1.Intn(1000)))
-	go rn.processEvents()
+	rn.sm = NewStateMachine(int64(len(rn.cluster.Peers)), int64(config.Id), rn.actionCh, config.ElectionTimeout, currentTerm, votedFor, rn.lg)
 
 	return rn
 }
@@ -112,10 +102,20 @@ func (rn *RaftNode) process(ev events) {
 		ev, _ := ev.(LogStore)
 		rn.lg.TruncateToEnd(ev.index)
 		rn.lg.Append(ev.data)
+	} else if (ev.eventName() == "Commit") {
+		ev, _ := ev.(Commit)
+		out := CommitInfo{ev.data, ev.index, ev.err}
+		rn.commitCh <- out
+	} else if (ev.eventName() == "Send") {
+		ev, _ := ev.(Send)
+    	go func(){
+    		rn.server.Outbox() <- &cluster.Envelope{Pid: int(ev.to), Msg: ev.c}
+    	}()
 	}
 }
 
 func (rn *RaftNode) processEvents() {
+	rn.timer = time.NewTimer(rn.sm.electionTimeout + time.Duration(r1.Intn(1000)))
 	for { 
 		var actions []events
 		if rn.sm.status == "Leader" {
@@ -158,4 +158,20 @@ func (rn *RaftNode) Append(data []byte) {
 
 func (rn *RaftNode) CommitChannel() <- chan CommitInfo {
 	return rn.commitCh
+}
+
+func (rn *RaftNode) CommittedIndex() int64 {
+	return rn.sm.commitIndex
+}
+
+func (rn *RaftNode) Get(index int64) ([]byte, error) {
+	return rn.lg.Get(index)
+}
+
+func (rn *RaftNode) LeaderId() int {
+	if (rn.sm.status == "Leader") {
+		return int(rn.sm.id)
+	} else {
+		return -1
+	}
 }
