@@ -1,10 +1,12 @@
-package raft
+package main
 
+import "fmt"
 import "time"
 import "github.com/cs733-iitb/log"
 import "github.com/cs733-iitb/cluster"
 import "strconv"
 import "github.com/syndtr/goleveldb/leveldb"
+import "encoding/json"
 
 // data goes in via Append, comes out as CommitInfo from the node's CommitChannel // Index is valid only if err == nil
 type CommitInfo struct { 
@@ -108,13 +110,17 @@ func (rn *RaftNode) process(ev events) {
 		rn.commitCh <- out
 	} else if (ev.eventName() == "Send") {
 		ev, _ := ev.(Send)
+		fmt.Println("Send ", ev.to, ev.eventName())
+		b, _ := json.Marshal(ev.c)
+		fmt.Println(string(b))
     	go func(){
-    		rn.server.Outbox() <- &cluster.Envelope{Pid: int(ev.to), Msg: ev.c}
+    		rn.server.Outbox() <- &cluster.Envelope{Pid: int(ev.to), Msg: b}
     	}()
 	}
 }
 
 func (rn *RaftNode) processEvents() {
+	fmt.Println("Started ", rn.sm.id)
 	rn.timer = time.NewTimer(rn.sm.electionTimeout + time.Duration(r1.Intn(1000)))
 	for { 
 		var actions []events
@@ -124,7 +130,9 @@ func (rn *RaftNode) processEvents() {
 					//fmt.Println("Started ", sm.id)
 					appendMsg.execute(rn.sm)
 				case envMsg := <- rn.server.Inbox() :	
-					peerMsg := envMsg.Msg.(command)
+					b := envMsg.Msg.([]byte)
+					var peerMsg command
+					json.Unmarshal(b, &peerMsg)
 					peerMsg.execute(rn.sm)	
 				case <- rn.timer.C :
 					rn.sm.Timeout()
@@ -132,13 +140,22 @@ func (rn *RaftNode) processEvents() {
 		} else {
 			select {
 				case envMsg := <- rn.server.Inbox() :	
-					peerMsg := envMsg.Msg.(command)	
+					b := envMsg.Msg.([]byte)
+					fmt.Println(string(b))
+					var peerMsg command
+					json.Unmarshal(b, &peerMsg)
 					peerMsg.execute(rn.sm)	
 				case <- rn.timer.C :
 					rn.sm.Timeout()	
 			}
 		}
- 		for ev := range rn.actionCh {
+		var e Done
+		rn.actionCh <- e
+ 		for {
+ 			ev := <- rn.actionCh
+ 			if(ev.eventName() == "Event Processed") {
+ 				break
+ 			}  
         	actions = append(actions, ev)
     	}	    
     	for i:=0; i< len(actions); i++ {
@@ -175,3 +192,48 @@ func (rn *RaftNode) LeaderId() int {
 		return -1
 	}
 }
+
+func makeRafts() []RaftNode {
+	var r []RaftNode
+	for i:=0; i<3; i++ {
+		config := NodeConfig{configs, i, "$GOPATH/src/github.com/aakashdeshpande/cs733/assignment3/", 500, 500}
+		r = append(r, New(config))
+	}
+	return r
+}
+
+func getLeader(r []RaftNode) *RaftNode {
+	for _, node := range r {
+		if(node.LeaderId() != -1) {
+			return &node
+		}
+	}
+	return nil
+}
+
+func main(){
+
+	//var actionCh chan events = make(chan events)
+	//serverMain(actionCh);
+
+	rafts := makeRafts() // array of []raft.Node 
+	for i:=0; i<3; i++ {
+		go rafts[i].processEvents()
+		fmt.Println(rafts[i].sm.id)
+	}
+	time.Sleep(10*time.Second)
+	ldr := getLeader(rafts)
+	ldr.Append([]byte("foo"))
+	time.Sleep(1*time.Second)
+	for _, node := range rafts { 
+		select {
+			case ci := <- node.CommitChannel():
+				if ci.Err != nil {fmt.Println(ci.Err)} 
+				if string(ci.Data) != "foo" {
+					fmt.Println("Got different data")
+				}
+			default: fmt.Println("Expected message on all nodes")
+		}
+	}
+}
+

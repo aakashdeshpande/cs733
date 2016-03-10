@@ -1,6 +1,6 @@
-package raft
+package main
 
-//import "fmt"	
+import "fmt"	
 import "time"
 import "math/rand"
 import "encoding/json"
@@ -20,8 +20,8 @@ func min(a int64, b int64) int64{
 }
 
 type LogInfo struct{
-	data []byte
-	term int64
+	Data []byte
+	Term int64
 }
 
 /**************************************************************/
@@ -229,8 +229,8 @@ func NewStateMachine(servers int64, id int64, actionCh chan events, electionTime
 			b, _ := lg.Get(i)
 			var entry LogInfo
 			json.Unmarshal(b, &entry)
-			sm.log[i] = entry.data
-			sm.logTerm[i] = entry.term
+			sm.log[i] = entry.Data
+			sm.logTerm[i] = entry.Term
 		}
 		sm.lastLogIndex = size - 1
 		sm.lastLogTerm = sm.logTerm[size - 1]
@@ -325,6 +325,7 @@ func (sm *StateMachine) LogStore(index int64, entries []byte, entryTerm int64) {
 /**************************************************************/
 
 func (sm *StateMachine) Timeout() {
+	fmt.Println("Timeout ", sm.id, sm.status, sm.term)
 	if sm.status == "Leader" {
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
@@ -358,6 +359,7 @@ func (c VoteRequest) commandName() string{
 }
 
 func (msg VoteRequest) execute(sm *StateMachine) {
+	fmt.Println("Vote ", msg.from, msg.term, sm.status, sm.term)
 	if  sm.term <= msg.term && (sm.votedFor == -1 || sm.votedFor == msg.from) && //changed
 		(sm.lastLogTerm < msg.lastLogTerm || (sm.lastLogTerm == msg.lastLogTerm && sm.lastLogIndex <= msg.lastLogIndex)){ 
 		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.term, 10)), nil)
@@ -383,7 +385,7 @@ func (msg VoteResponse) execute(sm *StateMachine) {
 			sm.votesMap[msg.from] = 1
 			if sm.countOnes() > sm.servers/2	{
 				sm.status = "Leader"
-				//fmt.Println("Elected Leader ", sm.id)
+				fmt.Println("Elected Leader ", sm.id)
 				for i:=int64(0); i<sm.servers; i++ {
 					if (i != sm.id) {
 						sm.nextIndex[i] = sm.lastLogIndex + 1
@@ -410,7 +412,7 @@ func (c AppendEntriesRequest) commandName() string{
 }
 
 func (msg AppendEntriesRequest) execute(sm *StateMachine) {
-	//fmt.Println("Response ", msg.leaderId, msg.term, msg.lastLogTerm, msg.lastLogIndex, sm.status, sm.term)
+	fmt.Println("Request ", msg.leaderId, msg.term, msg.lastLogTerm, msg.lastLogIndex, sm.status, sm.term)
 	if sm.term < msg.term || (sm.status == "Candidate" && sm.term == msg.term) {
 		sm.status = "Follower"
 		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.term, 10)), nil)
@@ -451,7 +453,7 @@ func (c AppendEntriesResponse) commandName() string{
 }
 
 func (msg AppendEntriesResponse) execute(sm *StateMachine) {
-	//fmt.Println("Response ", msg.leaderId, msg.term, msg.lastLogTerm, msg.lastLogIndex, sm.status, sm.term)
+	fmt.Println("Response ", msg.from, msg.term, msg.success, msg.index, sm.status, sm.term)
 	if sm.term < msg.term && msg.success == false{
 		sm.status = "Follower"
 		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.term, 10)), nil)
@@ -526,13 +528,3 @@ func serverMain(actionCh chan events){
 	//}
 }
 
-func main(){
-	// Database to store currentTerm
-	//currentTerm, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment2/currentTerm", nil)
-	// Database to store votedFor
-	//votedFor, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment2/votedFor", nil)
-
-	var actionCh chan events = make(chan events)
-
-	serverMain(actionCh);
-}
