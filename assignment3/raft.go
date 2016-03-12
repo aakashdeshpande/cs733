@@ -8,8 +8,8 @@ import "strconv"
 import "github.com/cs733-iitb/log"
 import "github.com/syndtr/goleveldb/leveldb"
 
-var	s1 rand.Source = rand.NewSource(time.Now().UnixNano())
-var	r1 *rand.Rand = rand.New(s1)
+//var	s1 rand.Source = rand.NewSource(time.Now().UnixNano())
+//var	r1 *rand.Rand = rand.New(s1)
 
 func min(a int64, b int64) int64{
 	if(a < b){ 
@@ -26,90 +26,99 @@ type LogInfo struct{
 
 /**************************************************************/
 
-type command interface {
-    commandName() string
+type Command interface {
+    CommandName() string
     execute(sm *StateMachine)	  
 }
 
 // The request sent to a server to vote for a candidate to become a leader.
 type VoteRequest struct {
-	from          int64
-	term          int64
-	candidateId	  int64	
-	lastLogIndex  int64
-	lastLogTerm   int64
+	Name 		  string
+	From          int64
+	Term          int64
+	CandidateID	  int64	
+	LastLogIndex  int64
+	LastLogTerm   int64
 }
 
-func NewVoteReq(from int64, term int64, candidateId int64, lastLogIndex int64, lastLogTerm int64) VoteRequest {
+func NewVoteReq(From int64, Term int64, CandidateID int64, LastLogIndex int64, LastLogTerm int64) VoteRequest {
 	var c VoteRequest
-	c.from = from
-	c.term = term
-	c.candidateId = candidateId
-	c.lastLogIndex = lastLogIndex 
-	c.lastLogTerm = lastLogTerm 
+	c.Name = "VoteRequest"
+	c.From = From
+	c.Term = Term
+	c.CandidateID = CandidateID
+	c.LastLogIndex = LastLogIndex 
+	c.LastLogTerm = LastLogTerm 
 	return c
 }
 
-// The response returned from a server after a vote for a candidate to become a leader.
+// The response returned From a server after a vote for a candidate to become a leader.
 type VoteResponse struct {
-	from 		  int64
-	term          int64
-	voteGranted   bool
+	Name 		  string
+	From 		  int64
+	Term          int64
+	VoteGranted   bool
 }
 
-func NewVoteResp(from int64, term int64, voteGranted bool) VoteResponse {
+func NewVoteResp(From int64, Term int64, VoteGranted bool) VoteResponse {
 	var c VoteResponse
-	c.from = from
-	c.term = term
-	c.voteGranted = voteGranted
+	c.Name = "VoteResponse"
+	c.From = From
+	c.Term = Term
+	c.VoteGranted = VoteGranted
 	return c
 } 
 
 type AppendEntriesRequest struct {
-	leaderId      int64
-	term          int64
-	lastLogIndex  int64
-	lastLogTerm   int64
-	entries 	  []byte
-	entryTerm	  int64
-	leaderCommit  int64
+	Name 		  string
+	LeaderID      int64
+	Term          int64
+	LastLogIndex  int64
+	LastLogTerm   int64
+	Entries 	  []byte
+	EntryTerm	  int64
+	LeaderCommit  int64
 }
 
-func NewAppendEntriesReq(leaderId int64, term int64, lastLogIndex int64, lastLogTerm int64, entries []byte, entryTerm int64, leaderCommit int64) AppendEntriesRequest {
+func NewAppendEntriesReq(LeaderID int64, Term int64, LastLogIndex int64, LastLogTerm int64, Entries []byte, EntryTerm int64, LeaderCommit int64) AppendEntriesRequest {
 	var c AppendEntriesRequest
-	c.leaderId = leaderId
-	c.term = term
-	c.lastLogIndex = lastLogIndex
-	c.lastLogTerm = lastLogTerm
-	c.entries = entries
-	c.entryTerm = entryTerm
-	c.leaderCommit = leaderCommit
+	c.Name = "AppendEntriesRequest"
+	c.LeaderID = LeaderID
+	c.Term = Term
+	c.LastLogIndex = LastLogIndex
+	c.LastLogTerm = LastLogTerm
+	c.Entries = Entries
+	c.EntryTerm = EntryTerm
+	c.LeaderCommit = LeaderCommit
 	return c
 }
 
 type AppendEntriesResponse struct {
-	from	      int64
-	term          int64
-	index         int64
-	success		  bool
+	Name 		  string
+	From	      int64
+	Term          int64
+	Index         int64
+	Success		  bool
 }
 
-func NewAppendEntriesResp(from int64, term int64, index int64, success bool) AppendEntriesResponse {
+func NewAppendEntriesResp(From int64, Term int64, Index int64, Success bool) AppendEntriesResponse {
 	var c AppendEntriesResponse
-	c.from = from
-	c.term = term
-	c.index = index
-	c.success = success
+	c.Name = "AppendEntriesResponse"
+	c.From = From
+	c.Term = Term
+	c.Index = Index
+	c.Success = Success
 	return c
 }
 
 type Append struct {
-	data          []byte
+	Name 		  string
+	Data          []byte
 }
 
-func NewAppend(data []byte) Append{
+func NewAppend(Data []byte) Append{
 	var c Append
-	c.data = data
+	c.Data = Data
 	return c
 }
 
@@ -121,10 +130,10 @@ type events interface {
 
 type Send struct{
 	to 	 int64
-	c 	 command
+	c 	 Command
 }
 
-func NewSend(id int64, c command) Send{
+func NewSend(id int64, c Command) Send{
 	var s Send
 	s.to = id
 	s.c = c
@@ -144,28 +153,28 @@ func NewAlarm(id int64, duration time.Duration) Alarm{
 }
 
 type Commit struct{
-	index 	 int64
-	data 	 []byte
+	Index 	 int64
+	Data 	 []byte
 	err 	 error
 }
 
-func NewCommit(index int64, data []byte, err error) Commit{
+func NewCommit(Index int64, Data []byte, err error) Commit{
 	var s Commit
-	s.index = index
-	s.data = data
+	s.Index = Index
+	s.Data = Data
 	s.err = err
 	return s
 }
 
 type LogStore struct{
-	index 	 int64
-	data 	 []byte
+	Index 	 int64
+	Data 	 []byte
 }
 
-func NewLogStore(index int64, data []byte) LogStore{
+func NewLogStore(Index int64, Data []byte) LogStore{
 	var s LogStore
-	s.index = index
-	s.data = data
+	s.Index = Index
+	s.Data = Data
 	return s
 }
 
@@ -178,12 +187,12 @@ type StateMachine struct {
 	servers 	  int64
 	id 			  int64
 	status		  string
-	term 		  int64
+	Term 		  int64
 	currentTerm   *leveldb.DB
-	votedFor 	  int64  		// Should votedFor be linked to the term?
+	votedFor 	  int64  		// Should votedFor be linked to the Term?
 	voted         *leveldb.DB
-	lastLogIndex  int64
-	lastLogTerm   int64
+	LastLogIndex  int64
+	LastLogTerm   int64
 	log  		  [][]byte	
 	logTerm 	  map[int64]int64
 	commitIndex   int64			
@@ -202,11 +211,11 @@ func NewStateMachine(servers int64, id int64, actionCh chan events, electionTime
 	sm.id = id
 	sm.status = "Follower"
 	sm.currentTerm = currentTerm
-	term, err := currentTerm.Get([]byte(strconv.FormatInt(sm.id, 10)), nil)
+	Term, err := currentTerm.Get([]byte(strconv.FormatInt(sm.id, 10)), nil)
 	if err == nil {
-		sm.term, _ = strconv.ParseInt(string(term), 10, 64)
+		sm.Term, _ = strconv.ParseInt(string(Term), 10, 64)
 	} else {
-		sm.term = int64(0)
+		sm.Term = int64(0)
 	}
 
 	sm.voted = voted
@@ -222,8 +231,8 @@ func NewStateMachine(servers int64, id int64, actionCh chan events, electionTime
 
 	size := lg.GetLastIndex() + 1
 	if (size == 0) {
-		sm.lastLogIndex = -1
-		sm.lastLogTerm = 0
+		sm.LastLogIndex = -1
+		sm.LastLogTerm = 0
 	} else {
 		for i:=int64(0); i<size; i++ {
 			b, _ := lg.Get(i)
@@ -232,8 +241,8 @@ func NewStateMachine(servers int64, id int64, actionCh chan events, electionTime
 			sm.log[i] = entry.Data
 			sm.logTerm[i] = entry.Term
 		}
-		sm.lastLogIndex = size - 1
-		sm.lastLogTerm = sm.logTerm[size - 1]
+		sm.LastLogIndex = size - 1
+		sm.LastLogTerm = sm.logTerm[size - 1]
 	}
 
 	sm.commitIndex = -1
@@ -291,52 +300,57 @@ func (sm *StateMachine) countNeg() int64{
 	return count;
 }
 
-func (sm *StateMachine) Send(id int64, c command) bool {
+func (sm *StateMachine) Send(id int64, c Command) bool {
 	sm.actionCh <- NewSend(id, c)	
 	return true	
 }
 
 func (sm *StateMachine) Alarm(duration time.Duration) {
 	if sm.status == "Leader" {
-		sm.actionCh <- NewAlarm(sm.id, duration)
+		sm.actionCh <- NewAlarm(sm.id, duration/3)
 	} else if sm.status == "Candidate" {
-		sm.actionCh <- NewAlarm(sm.id, (duration + time.Duration(r1.Intn(1000)))*5)
+		rm := rand.Intn(1000)
+		//fmt.Println("Candidate Timeout ",rm)
+		sm.actionCh <- NewAlarm(sm.id, (duration + time.Duration(rm))*10)
 	} else {
-		sm.actionCh <- NewAlarm(sm.id, duration + time.Duration(r1.Intn(1000)))
+		rm := rand.Intn(1000)
+		//fmt.Println("Follower Timeout ",rm)
+		sm.actionCh <- NewAlarm(sm.id, duration + time.Duration(rm))
 	}
 }
 
-func (sm *StateMachine) Commit(index int64) {
-	if(index != -1) {
-		sm.actionCh <- NewCommit(index, sm.log[index], nil)
+func (sm *StateMachine) Commit(Index int64) {
+	if(Index != -1) {
+		sm.actionCh <- NewCommit(Index, sm.log[Index], nil)
 	} else {
-		sm.actionCh <- NewCommit(index, nil, nil)
+		sm.actionCh <- NewCommit(Index, nil, nil)
 	}
 }
 
-func (sm *StateMachine) LogStore(index int64, entries []byte, entryTerm int64) {
-	sm.log[index] = entries
-	sm.logTerm[index] = entryTerm
-	entry := LogInfo{ entries, entryTerm }
+func (sm *StateMachine) LogStore(Index int64, Entries []byte, EntryTerm int64) {
+	sm.log[Index] = Entries
+	sm.logTerm[Index] = EntryTerm
+	fmt.Println("Log ", Index, string(Entries))
+	entry := LogInfo{Entries, EntryTerm}
 	b, _ := json.Marshal(entry)
-	sm.actionCh <- NewLogStore(index, b)
+	sm.actionCh <- NewLogStore(Index, b)
 }
 
 /**************************************************************/
 
 func (sm *StateMachine) Timeout() {
-	fmt.Println("Timeout ", sm.id, sm.status, sm.term)
+	fmt.Println("Timeout ", sm.id, sm.status, sm.Term)
 	if sm.status == "Leader" {
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
-				sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.term, sm.commitIndex))
+				sm.Send(i, NewAppendEntriesReq(sm.id, sm.Term, sm.LastLogIndex, sm.LastLogTerm, nil, sm.Term, sm.commitIndex))
 			}
 		}
 		sm.Alarm(sm.electionTimeout)
 	} else {
 		sm.status = "Candidate"
-		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.term + 1, 10)), nil)
-		sm.term ++
+		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.Term + 1, 10)), nil)
+		sm.Term ++
 		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.id, 10)), nil)
 		sm.votedFor = sm.id
 		for i:=int64(0); i<sm.servers; i++ {
@@ -345,7 +359,7 @@ func (sm *StateMachine) Timeout() {
 		sm.votesMap[sm.id] = 1
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
-				sm.Send(i, NewVoteReq(sm.id, sm.term, sm.id, sm.lastLogIndex, sm.lastLogTerm))
+				sm.Send(i, NewVoteReq(sm.id, sm.Term, sm.id, sm.LastLogIndex, sm.LastLogTerm))
 			}
 		}
 		sm.Alarm(sm.electionTimeout)
@@ -354,159 +368,159 @@ func (sm *StateMachine) Timeout() {
 
 /**************************************************************/
 
-func (c VoteRequest) commandName() string{
+func (c VoteRequest) CommandName() string{
 	return "VoteRequest"
 }
 
 func (msg VoteRequest) execute(sm *StateMachine) {
-	fmt.Println("Vote ", msg.from, msg.term, sm.status, sm.term)
-	if  sm.term <= msg.term && (sm.votedFor == -1 || sm.votedFor == msg.from) && //changed
-		(sm.lastLogTerm < msg.lastLogTerm || (sm.lastLogTerm == msg.lastLogTerm && sm.lastLogIndex <= msg.lastLogIndex)){ 
-		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.term, 10)), nil)
-		sm.term = msg.term
-		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.from, 10)), nil)
-		sm.votedFor = msg.from
+	fmt.Println("Vote ", msg.From, msg.Term, sm.status, sm.Term)
+	if  sm.Term <= msg.Term && (sm.votedFor == -1 || sm.votedFor == msg.From) && //changed
+		(sm.LastLogTerm < msg.LastLogTerm || (sm.LastLogTerm == msg.LastLogTerm && sm.LastLogIndex <= msg.LastLogIndex)){ 
+		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
+		sm.Term = msg.Term
+		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.From, 10)), nil)
+		sm.votedFor = msg.From
 		sm.status = "Follower"
 		
-		sm.Send(msg.from, NewVoteResp(sm.id, msg.term, true))
+		sm.Send(msg.From, NewVoteResp(sm.id, msg.Term, true))
 		sm.Alarm(sm.electionTimeout)
 	} else{
-		sm.Send(msg.from, NewVoteResp(sm.id, msg.term, false))
+		sm.Send(msg.From, NewVoteResp(sm.id, msg.Term, false))
 	}
 }
 
-func (c VoteResponse) commandName() string{
+func (c VoteResponse) CommandName() string{
 	return "VoteResponse"
 }
 
 func (msg VoteResponse) execute(sm *StateMachine) {
 	if sm.status == "Candidate" {
-		if sm.term == msg.term && msg.voteGranted {
-			sm.votesMap[msg.from] = 1
+		if sm.Term == msg.Term && msg.VoteGranted {
+			sm.votesMap[msg.From] = 1
 			if sm.countOnes() > sm.servers/2	{
 				sm.status = "Leader"
 				fmt.Println("Elected Leader ", sm.id)
 				for i:=int64(0); i<sm.servers; i++ {
 					if (i != sm.id) {
-						sm.nextIndex[i] = sm.lastLogIndex + 1
+						sm.nextIndex[i] = sm.LastLogIndex + 1
 						sm.matchIndex[i] = -1
-						sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, nil, sm.term, sm.commitIndex))
+						sm.Send(i, NewAppendEntriesReq(sm.id, sm.Term, sm.LastLogIndex, sm.LastLogTerm, nil, sm.Term, sm.commitIndex))
 					}
 				}
 				sm.Alarm(sm.electionTimeout)	
 			}
-		} else if sm.term == msg.term && !msg.voteGranted {
-			sm.votesMap[msg.from] = -1
+		} else if sm.Term == msg.Term && !msg.VoteGranted {
+			sm.votesMap[msg.From] = -1
 			if sm.countNeg() > sm.servers/2	{
 				sm.status = "Follower"
 				sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.id, 10)), nil)
 				sm.votedFor = sm.id
-				sm.Alarm(sm.electionTimeout) // To reset only on success?
+				sm.Alarm(sm.electionTimeout) // To reset only on Success?
 			}
 		}
 	}
 }
 
-func (c AppendEntriesRequest) commandName() string{
+func (c AppendEntriesRequest) CommandName() string{
 	return "AppendEntriesRequest"
 }
 
 func (msg AppendEntriesRequest) execute(sm *StateMachine) {
-	fmt.Println("Request ", msg.leaderId, msg.term, msg.lastLogTerm, msg.lastLogIndex, sm.status, sm.term)
-	if sm.term < msg.term || (sm.status == "Candidate" && sm.term == msg.term) {
+	fmt.Println("Request ", msg.LeaderID, msg.Term, msg.LastLogTerm, msg.LastLogIndex, sm.status, sm.Term)
+	if sm.Term < msg.Term || (sm.status == "Candidate" && sm.Term == msg.Term) {
 		sm.status = "Follower"
-		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.term, 10)), nil)
-		sm.term = msg.term
+		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
+		sm.Term = msg.Term
 		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(int64(-1), 10)), nil)
 		sm.votedFor = -1
-		sm.Alarm(sm.electionTimeout) // To reset only on success?
+		sm.Alarm(sm.electionTimeout) // To reset only on Success?
 	} 
 
 	// Check that nextIndex is more than commitIndex
-	if  sm.term > msg.term {
-		sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
-	} else if (msg.lastLogIndex != -1) && 
-	(msg.lastLogIndex < sm.commitIndex || (msg.entries != nil && (msg.lastLogIndex > sm.lastLogIndex || sm.logTerm[msg.lastLogIndex] != msg.lastLogTerm))) {
-		sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, false))
+	if  sm.Term > msg.Term {
+		sm.Send(msg.LeaderID, NewAppendEntriesResp(sm.id, sm.Term, sm.LastLogIndex, false))
+	} else if (msg.LastLogIndex != -1) && 
+	(msg.LastLogIndex < sm.commitIndex || (msg.Entries != nil && (msg.LastLogIndex > sm.LastLogIndex || sm.logTerm[msg.LastLogIndex] != msg.LastLogTerm))) {
+		sm.Send(msg.LeaderID, NewAppendEntriesResp(sm.id, sm.Term, sm.LastLogIndex, false))
 	} else {
-		if(msg.entries != nil){
-			if  sm.lastLogIndex > msg.lastLogIndex {
-				sm.lastLogIndex = msg.lastLogIndex
+		if(msg.Entries != nil){
+			if  sm.LastLogIndex > msg.LastLogIndex {
+				sm.LastLogIndex = msg.LastLogIndex
 			}
-			sm.LogStore(sm.lastLogIndex + 1, msg.entries, msg.entryTerm)	
-			sm.lastLogIndex ++
-			sm.lastLogTerm = msg.entryTerm
-			sm.Send(msg.leaderId, NewAppendEntriesResp(sm.id, sm.term, sm.lastLogIndex, true)) //If overwriting, should this have current term?
+			sm.LogStore(sm.LastLogIndex + 1, msg.Entries, msg.EntryTerm)	
+			sm.LastLogIndex ++
+			sm.LastLogTerm = msg.EntryTerm
+			sm.Send(msg.LeaderID, NewAppendEntriesResp(sm.id, sm.Term, sm.LastLogIndex, true)) //If overwriting, should this have current Term?
 		}
 
-		if sm.commitIndex < msg.leaderCommit {	// with success or outside?
-			sm.commitIndex = min(msg.leaderCommit, sm.lastLogIndex)
-			sm.Commit(sm.commitIndex) //, data, err)
-			//fmt.Println("Commited ", sm.id, sm.commitIndex) 
+		if sm.commitIndex < msg.LeaderCommit {	// with Success or outside?
+			sm.commitIndex = min(msg.LeaderCommit, sm.LastLogIndex)
+			sm.Commit(sm.commitIndex) //, Data, err)
+			fmt.Println("Commited ", sm.id, sm.commitIndex) 
 		}
-		sm.Alarm(sm.electionTimeout) // To reset only on success?
+		sm.Alarm(sm.electionTimeout) // To reset only on Success?
 	}
 }
 
-func (c AppendEntriesResponse) commandName() string{
+func (c AppendEntriesResponse) CommandName() string{
 	return "AppendEntriesResponse"
 }
 
 func (msg AppendEntriesResponse) execute(sm *StateMachine) {
-	fmt.Println("Response ", msg.from, msg.term, msg.success, msg.index, sm.status, sm.term)
-	if sm.term < msg.term && msg.success == false{
+	fmt.Println("Response ", msg.From, msg.Term, msg.Success, msg.Index, sm.status, sm.Term)
+	if sm.Term < msg.Term && msg.Success == false{
 		sm.status = "Follower"
-		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.term, 10)), nil)
-		sm.term = msg.term
+		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
+		sm.Term = msg.Term
 		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(int64(-1), 10)), nil)
 		sm.votedFor = -1
-		sm.Alarm(sm.electionTimeout) // To reset only on success?
+		sm.Alarm(sm.electionTimeout) // To reset only on Success?
 	} else if sm.status == "Leader" {
-		if msg.success {
-			sm.matchIndex[msg.from] = msg.index 
-	        sm.nextIndex[msg.from] = msg.index + 1
+		if msg.Success {
+			sm.matchIndex[msg.From] = msg.Index 
+	        sm.nextIndex[msg.From] = msg.Index + 1
 
 	        count := int64(1)
 	        for i:=int64(0); i<sm.servers; i++ {
 				if (i != sm.id) {
-					if(sm.matchIndex[i] >= sm.matchIndex[msg.from]) { count++ }
+					if(sm.matchIndex[i] >= sm.matchIndex[msg.From]) { count++ }
 				}
 			}
 
 	        if count > sm.servers/2 {
-	        	if sm.commitIndex < msg.index && sm.term == sm.logTerm[msg.index] {
-	        		sm.commitIndex = msg.index 
+	        	if sm.commitIndex < msg.Index && sm.Term == sm.logTerm[msg.Index] {
+	        		sm.commitIndex = msg.Index 
 	        		sm.Commit(sm.commitIndex) 
 	        	}
 	        }
 	    } else { //If AppendEntries fails because of log inconsistency
-	        sm.nextIndex[msg.from] --
-	        sm.nextIndex[msg.from] = min(sm.nextIndex[msg.from], 0)
+	        sm.nextIndex[msg.From] --
+	        sm.nextIndex[msg.From] = min(sm.nextIndex[msg.From], 0)
 	    }
-	    if sm.lastLogIndex >= sm.nextIndex[msg.from] {
-	    	sm.Send(msg.from, NewAppendEntriesReq(sm.id, sm.term, sm.nextIndex[msg.from] - 1, sm.logTerm[sm.nextIndex[msg.from] - 1],
-	    	sm.log[sm.nextIndex[msg.from]], sm.logTerm[sm.nextIndex[msg.from]], sm.commitIndex))  
+	    if sm.LastLogIndex >= sm.nextIndex[msg.From] {
+	    	sm.Send(msg.From, NewAppendEntriesReq(sm.id, sm.Term, sm.nextIndex[msg.From] - 1, sm.logTerm[sm.nextIndex[msg.From] - 1],
+	    	sm.log[sm.nextIndex[msg.From]], sm.logTerm[sm.nextIndex[msg.From]], sm.commitIndex))  
 	    }
     } 
 }
 
 /**************************************************************/
 
-func (c Append) commandName() string{
+func (c Append) CommandName() string{
 	return "Append"
 }
 
 func (msg Append) execute(sm *StateMachine) {
 	if sm.status == "Leader" {
-		sm.LogStore(sm.lastLogIndex + 1, msg.data, sm.term)
-		//sm.acksRecieved[sm.lastLogIndex + 1] = 1
+		sm.LogStore(sm.LastLogIndex + 1, msg.Data, sm.Term)
+		//sm.acksRecieved[sm.LastLogIndex + 1] = 1
 	    for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
-				sm.Send(i, NewAppendEntriesReq(sm.id, sm.term, sm.lastLogIndex, sm.lastLogTerm, msg.data, sm.term, sm.commitIndex)) // Send next index
+				sm.Send(i, NewAppendEntriesReq(sm.id, sm.Term, sm.LastLogIndex, sm.LastLogTerm, msg.Data, sm.Term, sm.commitIndex)) // Send next Index
 			}
 		}
-		sm.lastLogIndex ++		
-		sm.lastLogTerm = sm.term
+		sm.LastLogIndex ++		
+		sm.LastLogTerm = sm.Term
 	} 
 }
 
