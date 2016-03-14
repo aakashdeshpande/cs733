@@ -1,6 +1,6 @@
 package main
 
-import "fmt"	
+//import "fmt"	
 import "time"
 import "math/rand"
 import "encoding/json"
@@ -205,12 +205,19 @@ type StateMachine struct {
 	//acksRecieved  map[int64]int64
 }
 
-func NewStateMachine(servers int64, id int64, actionCh chan events, electionTimeout int, currentTerm *leveldb.DB, voted *leveldb.DB, lg *log.Log) *StateMachine{
+func NewStateMachine(servers int64, id int64, actionCh chan events, electionTimeout int, lg *log.Log) *StateMachine{
 	var sm *StateMachine = new(StateMachine)
 	sm.servers = servers
 	sm.id = id
 	sm.status = "Follower"
-	sm.currentTerm = currentTerm
+
+	currentTerm, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment3/currentTerm", nil)
+	defer currentTerm.Close()
+	// Database to store votedFor
+	voted, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment3/votedFor", nil)
+	defer voted.Close()
+	//sm.currentTerm = currentTerm
+	//defer sm.currentTerm.Close()
 	Term, err := currentTerm.Get([]byte(strconv.FormatInt(sm.id, 10)), nil)
 	if err == nil {
 		sm.Term, _ = strconv.ParseInt(string(Term), 10, 64)
@@ -218,7 +225,8 @@ func NewStateMachine(servers int64, id int64, actionCh chan events, electionTime
 		sm.Term = int64(0)
 	}
 
-	sm.voted = voted
+	//sm.voted = voted
+	//defer sm.voted.Close()
 	vote, err := voted.Get([]byte(strconv.FormatInt(sm.id, 10)), nil)
 	if err == nil {
 		sm.votedFor, _ = strconv.ParseInt(string(vote), 10, 64)
@@ -309,12 +317,12 @@ func (sm *StateMachine) Alarm(duration time.Duration) {
 	if sm.status == "Leader" {
 		sm.actionCh <- NewAlarm(sm.id, duration/3)
 	} else if sm.status == "Candidate" {
-		rm := rand.Intn(1000)
-		//fmt.Println("Candidate Timeout ",rm)
-		sm.actionCh <- NewAlarm(sm.id, (duration + time.Duration(rm))*10)
+		rm := rand.Intn(10000)
+		//fmt.Println("Candidate Timeout ",sm.id, " ", rm)
+		sm.actionCh <- NewAlarm(sm.id, duration*time.Duration(10) + time.Duration(rm))
 	} else {
 		rm := rand.Intn(1000)
-		//fmt.Println("Follower Timeout ",rm)
+		//fmt.Println("Follower Timeout ",sm.id, " ", rm)
 		sm.actionCh <- NewAlarm(sm.id, duration + time.Duration(rm))
 	}
 }
@@ -330,7 +338,7 @@ func (sm *StateMachine) Commit(Index int64) {
 func (sm *StateMachine) LogStore(Index int64, Entries []byte, EntryTerm int64) {
 	sm.log[Index] = Entries
 	sm.logTerm[Index] = EntryTerm
-	fmt.Println("Log ", Index, string(Entries))
+	//fmt.Println("Log ", Index, string(Entries))
 	entry := LogInfo{Entries, EntryTerm}
 	b, _ := json.Marshal(entry)
 	sm.actionCh <- NewLogStore(Index, b)
@@ -339,7 +347,6 @@ func (sm *StateMachine) LogStore(Index int64, Entries []byte, EntryTerm int64) {
 /**************************************************************/
 
 func (sm *StateMachine) Timeout() {
-	fmt.Println("Timeout ", sm.id, sm.status, sm.Term)
 	if sm.status == "Leader" {
 		for i:=int64(0); i<sm.servers; i++ {
 			if (i != sm.id) {
@@ -349,9 +356,9 @@ func (sm *StateMachine) Timeout() {
 		sm.Alarm(sm.electionTimeout)
 	} else {
 		sm.status = "Candidate"
-		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.Term + 1, 10)), nil)
+		//sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.Term + 1, 10)), nil)
 		sm.Term ++
-		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.id, 10)), nil)
+		//sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.id, 10)), nil)
 		sm.votedFor = sm.id
 		for i:=int64(0); i<sm.servers; i++ {
 			sm.votesMap[i] = 0
@@ -373,19 +380,20 @@ func (c VoteRequest) CommandName() string{
 }
 
 func (msg VoteRequest) execute(sm *StateMachine) {
-	fmt.Println("Vote ", msg.From, msg.Term, sm.status, sm.Term)
-	if  sm.Term <= msg.Term && (sm.votedFor == -1 || sm.votedFor == msg.From) && //changed
+	if  (sm.Term < msg.Term || (sm.Term == msg.Term && (sm.votedFor == -1 || sm.votedFor == msg.From))) && //changed
 		(sm.LastLogTerm < msg.LastLogTerm || (sm.LastLogTerm == msg.LastLogTerm && sm.LastLogIndex <= msg.LastLogIndex)){ 
-		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
+		//sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
 		sm.Term = msg.Term
-		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.From, 10)), nil)
+		//sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.From, 10)), nil)
 		sm.votedFor = msg.From
 		sm.status = "Follower"
 		
 		sm.Send(msg.From, NewVoteResp(sm.id, msg.Term, true))
+		//fmt.Println("Voted ", msg.From, msg.Term, sm.id, sm.status, sm.Term, " True")
 		sm.Alarm(sm.electionTimeout)
 	} else{
 		sm.Send(msg.From, NewVoteResp(sm.id, msg.Term, false))
+		//fmt.Println("Voted ", msg.From, msg.Term, sm.id, sm.status, sm.Term, " False")
 	}
 }
 
@@ -399,7 +407,7 @@ func (msg VoteResponse) execute(sm *StateMachine) {
 			sm.votesMap[msg.From] = 1
 			if sm.countOnes() > sm.servers/2	{
 				sm.status = "Leader"
-				fmt.Println("Elected Leader ", sm.id)
+				//fmt.Println("Elected Leader ", sm.id)
 				for i:=int64(0); i<sm.servers; i++ {
 					if (i != sm.id) {
 						sm.nextIndex[i] = sm.LastLogIndex + 1
@@ -413,7 +421,7 @@ func (msg VoteResponse) execute(sm *StateMachine) {
 			sm.votesMap[msg.From] = -1
 			if sm.countNeg() > sm.servers/2	{
 				sm.status = "Follower"
-				sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.id, 10)), nil)
+				//sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(sm.id, 10)), nil)
 				sm.votedFor = sm.id
 				sm.Alarm(sm.electionTimeout) // To reset only on Success?
 			}
@@ -426,12 +434,12 @@ func (c AppendEntriesRequest) CommandName() string{
 }
 
 func (msg AppendEntriesRequest) execute(sm *StateMachine) {
-	fmt.Println("Request ", msg.LeaderID, msg.Term, msg.LastLogTerm, msg.LastLogIndex, sm.status, sm.Term)
+	//fmt.Println("Request ", msg.LeaderID, msg.Term, msg.LastLogTerm, msg.LastLogIndex, sm.status, sm.Term)
 	if sm.Term < msg.Term || (sm.status == "Candidate" && sm.Term == msg.Term) {
 		sm.status = "Follower"
-		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
+		//sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
 		sm.Term = msg.Term
-		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(int64(-1), 10)), nil)
+		//sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(int64(-1), 10)), nil)
 		sm.votedFor = -1
 		sm.Alarm(sm.electionTimeout) // To reset only on Success?
 	} 
@@ -456,7 +464,7 @@ func (msg AppendEntriesRequest) execute(sm *StateMachine) {
 		if sm.commitIndex < msg.LeaderCommit {	// with Success or outside?
 			sm.commitIndex = min(msg.LeaderCommit, sm.LastLogIndex)
 			sm.Commit(sm.commitIndex) //, Data, err)
-			fmt.Println("Commited ", sm.id, sm.commitIndex) 
+			//fmt.Println("Commited ", sm.id, sm.commitIndex) 
 		}
 		sm.Alarm(sm.electionTimeout) // To reset only on Success?
 	}
@@ -467,12 +475,12 @@ func (c AppendEntriesResponse) CommandName() string{
 }
 
 func (msg AppendEntriesResponse) execute(sm *StateMachine) {
-	fmt.Println("Response ", msg.From, msg.Term, msg.Success, msg.Index, sm.status, sm.Term)
+	//fmt.Println("Response ", msg.From, msg.Term, msg.Success, msg.Index, sm.status, sm.Term)
 	if sm.Term < msg.Term && msg.Success == false{
 		sm.status = "Follower"
-		sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
+		//sm.currentTerm.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(msg.Term, 10)), nil)
 		sm.Term = msg.Term
-		sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(int64(-1), 10)), nil)
+		//sm.voted.Put([]byte(strconv.FormatInt(sm.id, 10)), []byte(strconv.FormatInt(int64(-1), 10)), nil)
 		sm.votedFor = -1
 		sm.Alarm(sm.electionTimeout) // To reset only on Success?
 	} else if sm.status == "Leader" {
@@ -538,7 +546,7 @@ func serverMain(actionCh chan events){
 
 	lg, _ := log.Open("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment3/Log" + strconv.Itoa(0))
 
-	NewStateMachine(servers, 0, actionCh, 500, currentTerm, votedFor, lg)
+	NewStateMachine(servers, 0, actionCh, 500, lg)
 	//}
 }
 
