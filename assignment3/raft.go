@@ -317,13 +317,15 @@ func (sm *StateMachine) Alarm(duration time.Duration) {
 	if sm.status == "Leader" {
 		sm.actionCh <- NewAlarm(sm.id, duration/3)
 	} else if sm.status == "Candidate" {
-		rm := rand.Intn(10000)
+		//rm := rand.Intn(10000)
+		rm := rand.Intn(100)
 		//fmt.Println("Candidate Timeout ",sm.id, " ", rm)
-		sm.actionCh <- NewAlarm(sm.id, duration*time.Duration(10) + time.Duration(rm))
+		sm.actionCh <- NewAlarm(sm.id, duration*5 + time.Duration(rm)*time.Millisecond)
 	} else {
-		rm := rand.Intn(1000)
+		//rm := rand.Intn(1000)
+		rm := rand.Intn(10)
 		//fmt.Println("Follower Timeout ",sm.id, " ", rm)
-		sm.actionCh <- NewAlarm(sm.id, duration + time.Duration(rm))
+		sm.actionCh <- NewAlarm(sm.id, duration + time.Duration(rm)*time.Millisecond)
 	}
 }
 

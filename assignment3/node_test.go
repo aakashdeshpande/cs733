@@ -56,9 +56,11 @@ func TestAppend(t *testing.T) {
 /*
 func TestShutDown(t *testing.T) {
 
+	termReset()
+
 	rafts := makeRafts() // array of []raft.Node 
 
-	for i:=0; i<3; i++ {
+	for i:=0; i<5; i++ {
 		defer rafts[i].lg.Close()
 		go rafts[i].processEvents()
 	}
@@ -83,7 +85,7 @@ func TestShutDown(t *testing.T) {
 
 	rafts2 := makeRafts() // array of []raft.Node
 
-	for i:=0; i<3; i++ {
+	for i:=0; i<5; i++ {
 		defer rafts2[i].lg.Close()
 		go rafts2[i].processEvents()
 	}
@@ -111,7 +113,7 @@ func TestLeaderDown(t *testing.T) {
 		go rafts[i].processEvents()
 	}
 
-	time.Sleep(3*time.Second)
+	time.Sleep(1*time.Second)
 	var ldr *RaftNode
 	for {
 		ldr = getLeader(rafts)
@@ -121,7 +123,7 @@ func TestLeaderDown(t *testing.T) {
 	}
 	
 	ldr.Append([]byte("foo"))
-	time.Sleep(3*time.Second)
+	time.Sleep(1*time.Second)
 
 	for _, node := range rafts { 
 		select {
@@ -138,7 +140,7 @@ func TestLeaderDown(t *testing.T) {
 
 	ldr.ShutDown()
 
-	time.Sleep(5*time.Second)
+	time.Sleep(2*time.Second)
 	for {
 		ldr = getLeader(rafts)
 		if (ldr != nil) { 
@@ -148,7 +150,7 @@ func TestLeaderDown(t *testing.T) {
 	//fmt.Println("Leader is", ldr.Id())
 
 	ldr.Append([]byte("fooAgain"))
-	time.Sleep(2*time.Second)
+	time.Sleep(1*time.Second)
 
 	select {
 		case ci := <- ldr.CommitChannel():
