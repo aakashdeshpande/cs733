@@ -5,6 +5,7 @@ import "math/rand"
 import "time"
 import "github.com/cs733-iitb/log"
 import "github.com/cs733-iitb/cluster"
+import "github.com/cs733-iitb/cluster/mock"
 import "strconv"
 import "github.com/syndtr/goleveldb/leveldb"
 import "encoding/json"
@@ -72,8 +73,8 @@ type RaftNode struct { // implements Node interface
 	server 	 cluster.Server
 	LogDir 	 string // Log file directory for this node
 	lg 		 *log.Log
-	mutex	 *sync.RWMutex
-	logMutex *sync.RWMutex	
+	mutex	 *sync.RWMutex // Ensure integrity of state machine fields
+	logMutex *sync.RWMutex	// Ensure correctness of log
 	currentTerm *leveldb.DB
 	votedFor *leveldb.DB
 }
@@ -82,7 +83,6 @@ type RaftNode struct { // implements Node interface
 func New(config NodeConfig) RaftNode {
 	var rn RaftNode 
 	rn.cluster = config.cluster
-	rn.server, _ = cluster.New(config.Id, rn.cluster)
 
 	rn.LogDir = config.LogDir
 	rn.lg, _ = log.Open(rn.LogDir + "/Log" + strconv.Itoa(config.Id))
@@ -231,8 +231,10 @@ func (rn *RaftNode) CommittedIndex() int64 {
 func (rn *RaftNode) Get(index int64) ([]byte, error) {
 	rn.logMutex.RLock()
 	c, err := rn.lg.Get(index)
+	var entry LogInfo
+	json.Unmarshal(c, &entry)
 	rn.logMutex.RUnlock()
-	return c, err
+	return entry.Data, err
 }
 
 func (rn *RaftNode) LeaderId() int {
@@ -258,7 +260,6 @@ func (rn *RaftNode) ShutDown() {
 
 	db1.Put([]byte(strconv.FormatInt(rn.sm.id, 10)), []byte(strconv.FormatInt(rn.sm.Term, 10)), nil)
 	db2.Put([]byte(strconv.FormatInt(rn.sm.id, 10)), []byte(strconv.FormatInt(rn.sm.votedFor, 10)), nil)
-
 	close(rn.clientCh)
 	close(rn.commitCh)
 	close(rn.actionCh)
@@ -271,15 +272,44 @@ func (rn *RaftNode) ShutDown() {
 
 /**************************************************************/
 
+// Generates a cluster of 5 raft nodes with associated tcp ports
 func makeRafts() []RaftNode {
 	var r []RaftNode
 	for i:=0; i<len(configs.Peers); i++ {
 		config := NodeConfig{configs, i, "$GOPATH/src/github.com/aakashdeshpande/cs733/assignment3/", 500}
 		r = append(r, New(config))
+		r[i].server, _ = cluster.New(i, configs)
 	}
 	return r
+} 
+
+// Generates a mock cluster of 5 raft nodes 
+func makeMockRafts() ([]RaftNode, *mock.MockCluster){
+	// init the communication layer.
+	// Note, mock cluster doesn't need IP addresses. Only Ids
+	clconfig := cluster.Config{Peers:[]cluster.PeerConfig{
+		{Id:0}, {Id:1}, {Id:2}, {Id:3}, {Id:4}}}
+	cluster, err := mock.NewCluster(clconfig)
+	if err != nil {return nil, cluster}
+
+	// init the raft node layer
+	nodes := make([]RaftNode, len(clconfig.Peers))
+
+	// Create a raft node, and give the corresponding "Server" object from the
+	// cluster to help it communicate with the others.
+	for id := 0; id < 5; id++ {
+		config := NodeConfig{clconfig, id, "$GOPATH/src/github.com/aakashdeshpande/cs733/assignment3/", 500}
+		raftNode := New(config) // 
+
+		// Give each raftNode its own "Server" from the cluster.
+		raftNode.server = cluster.Servers[id]
+		nodes[id] = raftNode
+	}
+
+	return nodes, cluster
 }
 
+// Returns leader of cluster if present, nil otherwise
 func getLeader(r []RaftNode) *RaftNode {
 	for _, node := range r {
 		if(node.LeaderId() != -1) {
@@ -289,6 +319,7 @@ func getLeader(r []RaftNode) *RaftNode {
 	return nil
 }
 
+// Resets all logs and term, votedFor values
 func termReset() {
 	currentTerm, _ := leveldb.OpenFile("$GOPATH/src/github.com/aakashdeshpande/cs733/assignment3/currentTerm", nil)
 	defer currentTerm.Close()
