@@ -43,3 +43,17 @@ go get github.com/syndtr/goleveldb/leveldb
 
 	In the assignment2 directory, 
 	"go test" performs the test written in raft_test.go
+
+2] Assignment 3 : Raft Node
+
+	a] raft.go
+	Contains a description of the Raft state machine as described in the previous assignment
+
+	b] node.go
+	Contains a description of a RaftNode which implements output events of the state machine, interacts with the client and other RaftNodes. Also, contains functions to generate a cluster of RaftNodes or a mock cluster of RaftNodes
+
+	b] node_test.go	
+	Contains test cases to ensure that RaftNode behaviour is consistent with the requirements
+
+	In the assignment3 directory, 
+	"go test" performs the test written in node_test.go	

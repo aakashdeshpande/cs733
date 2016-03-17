@@ -11,7 +11,8 @@ import "github.com/syndtr/goleveldb/leveldb"
 import "encoding/json"
 import "sync"
 
-// Data goes in via Append, comes out as CommitInfo from the node's CommitChannel // Index is valid only if err == nil
+// Data goes in via Append, comes out as CommitInfo from the node's CommitChannel 
+// Index is valid only if err == nil
 type CommitInfo struct { 
 	Data []byte
 	Index int64  

@@ -4271,3 +4271,1020 @@
 00:11:34.276273 version@stat F·[3 1] S·609B[453B 156B] Sc·[0.75 0.00]
 00:11:36.469161 db@close closing
 00:11:36.492698 db@close done T·23.530535ms
+=============== Mar 16, 2016 (IST) ===============
+00:20:43.178598 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:20:43.178775 version@stat F·[3 1] S·609B[453B 156B] Sc·[0.75 0.00]
+00:20:43.178794 db@open opening
+00:20:43.178867 journal@recovery F·1
+00:20:43.181233 journal@recovery recovering @991
+00:20:43.182096 version@stat F·[3 1] S·609B[453B 156B] Sc·[0.75 0.00]
+00:20:43.182826 db@janitor F·6 G·0
+00:20:43.182859 db@open done T·4.053919ms
+00:20:43.184083 transaction@flush created L0@1002 N·4 S·146B "0,d829":"las..dex,v832"
+00:20:43.184131 version@stat F·[4 1] S·755B[599B 156B] Sc·[1.00 0.00]
+00:20:43.184402 db@close closing
+00:20:43.184482 table@compaction L0·4 -> L1·1 S·755B Q·832
+00:20:43.184499 table@build exiting
+00:20:43.184575 db@close done T·169.624µs
+=============== Mar 16, 2016 (IST) ===============
+00:20:44.416216 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:20:44.416470 version@stat F·[4 1] S·755B[599B 156B] Sc·[1.00 0.00]
+00:20:44.416489 db@open opening
+00:20:44.416589 journal@recovery F·1
+00:20:44.418680 journal@recovery recovering @1000
+00:20:44.420954 version@stat F·[4 1] S·755B[599B 156B] Sc·[1.00 0.00]
+00:20:44.421797 db@janitor F·7 G·0
+00:20:44.421827 db@open done T·5.327441ms
+00:20:44.698946 table@compaction L0·4 -> L1·1 S·755B Q·832
+00:20:44.699644 table@build created L1@1005 N·1 S·124B "las..dex,v832":"las..dex,v832"
+00:20:44.699707 version@stat F·[0 1] S·124B[0B 124B] Sc·[0.00 0.00]
+00:20:44.699947 table@compaction committed F-4 S-631B Ke·0 D·10 T·948.828µs
+00:20:44.700073 table@remove removed @1002
+00:20:44.700163 table@remove removed @999
+00:20:44.700234 table@remove removed @998
+00:20:44.700301 table@remove removed @996
+00:20:44.700372 table@remove removed @997
+00:20:46.774150 transaction@flush created L0@1006 N·1 S·124B "las..dex,v833":"las..dex,v833"
+00:20:46.774384 version@stat F·[1 1] S·248B[124B 124B] Sc·[0.25 0.00]
+00:20:46.808723 transaction@flush created L0@1007 N·2 S·156B "0,v834":"las..dex,v835"
+00:20:46.808772 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+00:20:50.055103 transaction@flush created L0@1008 N·1 S·123B "las..dex,v836":"las..dex,v836"
+00:20:50.055164 version@stat F·[3 1] S·527B[403B 124B] Sc·[0.75 0.00]
+00:20:50.095038 transaction@flush created L0@1009 N·2 S·164B "1,v837":"las..dex,v838"
+00:20:50.095192 version@stat F·[4 1] S·691B[567B 124B] Sc·[1.00 0.00]
+00:20:50.095923 table@compaction L0·4 -> L1·1 S·691B Q·838
+00:20:50.115292 table@build created L1@1010 N·3 S·179B "0,v834":"las..dex,v838"
+00:20:50.145349 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+00:20:50.145786 table@compaction committed F-4 S-512B Ke·0 D·4 T·49.780226ms
+00:20:50.158622 table@remove removed @1009
+00:20:50.158971 table@remove removed @1008
+00:20:50.159140 table@remove removed @1007
+00:20:50.159262 table@remove removed @1006
+00:20:50.197655 table@remove removed @1005
+00:20:51.477178 db@close closing
+00:20:51.477254 db@close done T·73.151µs
+=============== Mar 16, 2016 (IST) ===============
+00:20:51.961287 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:20:52.066012 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+00:20:52.066067 db@open opening
+00:20:52.066217 journal@recovery F·1
+00:20:52.066404 journal@recovery recovering @1003
+00:20:52.155479 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+00:20:52.205139 db@janitor F·3 G·0
+00:20:52.205179 db@open done T·139.091134ms
+00:20:52.206256 transaction@flush created L0@1013 N·3 S·140B "0,d839":"las..dex,v841"
+00:20:52.206313 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+00:20:52.249650 db@close closing
+00:20:52.249767 db@close done T·113.814µs
+=============== Mar 16, 2016 (IST) ===============
+00:20:54.236879 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:20:54.237157 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+00:20:54.237176 db@open opening
+00:20:54.237290 journal@recovery F·1
+00:20:54.237513 journal@recovery recovering @1011
+00:20:54.237981 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+00:20:54.238675 db@janitor F·4 G·0
+00:20:54.238704 db@open done T·1.516392ms
+00:20:56.908975 transaction@flush created L0@1016 N·1 S·124B "las..dex,v842":"las..dex,v842"
+00:20:56.943589 version@stat F·[2 1] S·443B[264B 179B] Sc·[0.50 0.00]
+00:20:57.025002 transaction@flush created L0@1017 N·2 S·156B "0,v843":"las..dex,v844"
+00:20:57.025096 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+00:20:58.958369 db@close closing
+00:20:58.958444 db@close done T·74.124µs
+=============== Mar 16, 2016 (IST) ===============
+00:21:01.037950 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:21:01.055037 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+00:21:01.055090 db@open opening
+00:21:01.055271 journal@recovery F·1
+00:21:01.057845 journal@recovery recovering @1014
+00:21:01.062802 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+00:21:01.064551 db@janitor F·6 G·0
+00:21:01.064587 db@open done T·9.478118ms
+00:21:03.864033 transaction@flush created L0@1020 N·1 S·123B "las..dex,v845":"las..dex,v845"
+00:21:03.864084 version@stat F·[4 1] S·722B[543B 179B] Sc·[1.00 0.00]
+00:21:03.934831 table@compaction L0·4 -> L1·1 S·722B Q·845
+00:21:04.023277 transaction@flush created L0@1021 N·2 S·164B "1,v846":"las..dex,v847"
+00:21:04.023398 version@stat F·[5 1] S·886B[707B 179B] Sc·[1.25 0.00]
+00:21:04.023977 table@build created L1@1022 N·2 S·156B "0,v843":"las..dex,v845"
+00:21:04.024469 version@stat F·[1 1] S·320B[164B 156B] Sc·[0.25 0.00]
+00:21:04.084516 table@compaction committed F-4 S-566B Ke·0 D·8 T·110.218105ms
+00:21:04.084763 table@remove removed @1020
+00:21:04.085004 table@remove removed @1017
+00:21:04.085173 table@remove removed @1016
+00:21:04.085301 table@remove removed @1013
+00:21:04.085460 table@remove removed @1010
+00:21:05.884764 db@close closing
+00:21:05.884831 db@close done T·65.726µs
+=============== Mar 16, 2016 (IST) ===============
+00:21:06.130340 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:21:06.133132 version@stat F·[1 1] S·320B[164B 156B] Sc·[0.25 0.00]
+00:21:06.133169 db@open opening
+00:21:06.133287 journal@recovery F·1
+00:21:06.140149 journal@recovery recovering @1018
+00:21:06.143426 version@stat F·[1 1] S·320B[164B 156B] Sc·[0.25 0.00]
+00:21:06.144613 db@janitor F·4 G·0
+00:21:06.144675 db@open done T·11.492802ms
+00:21:06.153328 transaction@flush created L0@1025 N·3 S·140B "0,d848":"las..dex,v850"
+00:21:06.153407 version@stat F·[2 1] S·460B[304B 156B] Sc·[0.50 0.00]
+00:21:06.154120 db@close closing
+00:21:06.154222 db@close done T·97.98µs
+=============== Mar 16, 2016 (IST) ===============
+00:21:07.414576 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:21:07.414936 version@stat F·[2 1] S·460B[304B 156B] Sc·[0.50 0.00]
+00:21:07.414981 db@open opening
+00:21:07.415140 journal@recovery F·1
+00:21:07.623061 journal@recovery recovering @1023
+00:21:07.634783 version@stat F·[2 1] S·460B[304B 156B] Sc·[0.50 0.00]
+00:21:07.690274 db@janitor F·5 G·0
+00:21:07.690323 db@open done T·275.325904ms
+00:21:09.055350 transaction@flush created L0@1028 N·1 S·124B "las..dex,v851":"las..dex,v851"
+00:21:09.055510 version@stat F·[3 1] S·584B[428B 156B] Sc·[0.75 0.00]
+00:21:09.075403 transaction@flush created L0@1029 N·2 S·156B "0,v852":"las..dex,v853"
+00:21:09.075430 version@stat F·[4 1] S·740B[584B 156B] Sc·[1.00 0.00]
+00:21:09.077777 table@compaction L0·4 -> L1·1 S·740B Q·853
+00:21:09.293492 table@build created L1@1030 N·2 S·156B "0,v852":"las..dex,v853"
+00:21:09.293592 version@stat F·[0 1] S·156B[0B 156B] Sc·[0.00 0.00]
+00:21:09.370125 table@compaction committed F-4 S-584B Ke·0 D·8 T·291.957862ms
+00:21:09.370366 table@remove removed @1029
+00:21:09.370966 table@remove removed @1028
+00:21:09.371482 table@remove removed @1025
+00:21:09.372040 table@remove removed @1021
+00:21:09.372185 table@remove removed @1022
+00:21:15.515217 transaction@flush created L0@1031 N·1 S·123B "las..dex,v854":"las..dex,v854"
+00:21:15.515408 version@stat F·[1 1] S·279B[123B 156B] Sc·[0.25 0.00]
+00:21:15.596474 transaction@flush created L0@1032 N·2 S·164B "1,v855":"las..dex,v856"
+00:21:15.596527 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+00:21:18.538399 db@close closing
+00:21:18.538455 db@close done T·55.119µs
+=============== Mar 17, 2016 (IST) ===============
+11:19:09.324556 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:19:09.365440 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:19:09.365463 db@open opening
+11:19:09.365537 journal@recovery F·1
+11:19:09.367819 journal@recovery recovering @1026
+11:19:09.368704 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:19:09.369479 db@janitor F·5 G·0
+11:19:09.369504 db@open done T·4.03275ms
+11:19:09.370903 transaction@flush created L0@1035 N·3 S·140B "0,d857":"las..dex,v859"
+11:19:09.370938 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:19:09.371240 db@close closing
+11:19:09.371305 db@close done T·63.541µs
+=============== Mar 17, 2016 (IST) ===============
+11:19:11.046516 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:19:11.046774 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:19:11.046793 db@open opening
+11:19:11.046883 journal@recovery F·1
+11:19:11.048908 journal@recovery recovering @1033
+11:19:11.052271 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:19:11.053206 db@janitor F·6 G·0
+11:19:11.053285 db@open done T·6.476801ms
+11:19:12.982295 transaction@flush created L0@1038 N·1 S·124B "las..dex,v860":"las..dex,v860"
+11:19:12.982347 version@stat F·[4 1] S·707B[551B 156B] Sc·[1.00 0.00]
+11:19:12.983085 table@compaction L0·4 -> L1·1 S·707B Q·860
+11:19:12.983331 transaction@flush created L0@1039 N·2 S·156B "0,v861":"las..dex,v862"
+11:19:12.983354 version@stat F·[5 1] S·863B[707B 156B] Sc·[1.25 0.00]
+11:19:12.998152 table@build created L1@1040 N·1 S·124B "las..dex,v860":"las..dex,v860"
+11:19:12.998203 version@stat F·[1 1] S·280B[156B 124B] Sc·[0.25 0.00]
+11:19:13.038623 table@compaction committed F-4 S-583B Ke·0 D·8 T·55.499874ms
+11:19:13.039055 table@remove removed @1038
+11:19:13.039279 table@remove removed @1035
+11:19:13.039419 table@remove removed @1032
+11:19:13.039522 table@remove removed @1031
+11:19:13.039610 table@remove removed @1030
+11:19:16.201572 transaction@flush created L0@1041 N·1 S·123B "las..dex,v863":"las..dex,v863"
+11:19:16.201616 version@stat F·[2 1] S·403B[279B 124B] Sc·[0.50 0.00]
+11:19:16.224673 transaction@flush created L0@1042 N·2 S·164B "1,v864":"las..dex,v865"
+11:19:16.224728 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:19:17.216203 db@close closing
+11:19:17.216296 db@close done T·90.256µs
+=============== Mar 17, 2016 (IST) ===============
+11:19:17.412083 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:19:17.450858 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:19:17.450885 db@open opening
+11:19:17.450997 journal@recovery F·1
+11:19:17.453357 journal@recovery recovering @1036
+11:19:17.457169 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:19:17.458157 db@janitor F·6 G·0
+11:19:17.458185 db@open done T·7.290031ms
+11:19:17.463629 transaction@flush created L0@1045 N·3 S·140B "0,d866":"las..dex,v868"
+11:19:17.463680 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:19:17.464148 db@close closing
+11:19:17.464233 table@compaction L0·4 -> L1·1 S·707B Q·868
+11:19:17.464249 table@build exiting
+11:19:17.464384 db@close done T·231.262µs
+=============== Mar 17, 2016 (IST) ===============
+11:19:18.489954 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:19:18.490151 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:19:18.490167 db@open opening
+11:19:18.490232 journal@recovery F·1
+11:19:18.490749 journal@recovery recovering @1043
+11:19:18.491505 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:19:18.492130 db@janitor F·7 G·0
+11:19:18.492149 db@open done T·1.974111ms
+11:19:18.492275 table@compaction L0·4 -> L1·1 S·707B Q·868
+11:19:19.376761 table@build created L1@1048 N·1 S·124B "las..dex,v868":"las..dex,v868"
+11:19:19.376848 version@stat F·[0 1] S·124B[0B 124B] Sc·[0.00 0.00]
+11:19:19.377131 table@compaction committed F-4 S-583B Ke·0 D·8 T·884.81676ms
+11:19:19.377275 table@remove removed @1045
+11:19:19.377380 table@remove removed @1042
+11:19:19.377484 table@remove removed @1041
+11:19:19.377581 table@remove removed @1039
+11:19:19.377683 table@remove removed @1040
+11:19:20.922070 transaction@flush created L0@1049 N·1 S·124B "las..dex,v869":"las..dex,v869"
+11:19:20.922233 version@stat F·[1 1] S·248B[124B 124B] Sc·[0.25 0.00]
+11:19:20.923489 transaction@flush created L0@1050 N·2 S·156B "0,v870":"las..dex,v871"
+11:19:20.923521 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:19:23.142083 db@close closing
+11:19:23.142132 db@close done T·48.356µs
+=============== Mar 17, 2016 (IST) ===============
+11:19:25.352106 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:19:25.381101 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:19:25.381140 db@open opening
+11:19:25.381262 journal@recovery F·1
+11:19:25.386805 journal@recovery recovering @1046
+11:19:25.387616 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:19:25.388371 db@janitor F·5 G·0
+11:19:25.388397 db@open done T·7.244713ms
+11:19:27.483872 transaction@flush created L0@1053 N·1 S·123B "las..dex,v872":"las..dex,v872"
+11:19:27.483925 version@stat F·[3 1] S·527B[403B 124B] Sc·[0.75 0.00]
+11:19:27.535910 transaction@flush created L0@1054 N·2 S·164B "1,v873":"las..dex,v874"
+11:19:27.536000 version@stat F·[4 1] S·691B[567B 124B] Sc·[1.00 0.00]
+11:19:27.545056 table@compaction L0·4 -> L1·1 S·691B Q·874
+11:19:27.548757 table@build created L1@1055 N·3 S·179B "0,v870":"las..dex,v874"
+11:19:27.548818 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:19:27.549646 table@compaction committed F-4 S-512B Ke·0 D·4 T·4.546149ms
+11:19:27.549921 table@remove removed @1054
+11:19:27.550053 table@remove removed @1053
+11:19:27.550197 table@remove removed @1050
+11:19:27.550398 table@remove removed @1049
+11:19:27.550508 table@remove removed @1048
+11:19:29.608524 db@close closing
+11:19:29.608602 db@close done T·76.763µs
+=============== Mar 17, 2016 (IST) ===============
+11:19:29.714904 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:19:29.715151 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:19:29.715170 db@open opening
+11:19:29.715257 journal@recovery F·1
+11:19:29.716037 journal@recovery recovering @1051
+11:19:29.717062 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:19:29.717733 db@janitor F·3 G·0
+11:19:29.717756 db@open done T·2.575702ms
+11:19:29.724074 transaction@flush created L0@1058 N·3 S·140B "0,d875":"las..dex,v877"
+11:19:29.724119 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:19:29.724402 db@close closing
+11:19:29.724481 db@close done T·76.568µs
+=============== Mar 17, 2016 (IST) ===============
+11:19:29.975046 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:19:29.975302 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:19:29.975323 db@open opening
+11:19:29.975416 journal@recovery F·1
+11:19:29.979061 journal@recovery recovering @1056
+11:19:29.984380 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:19:29.985225 db@janitor F·4 G·0
+11:19:29.985256 db@open done T·9.922313ms
+11:19:32.669001 transaction@flush created L0@1061 N·1 S·124B "las..dex,v878":"las..dex,v878"
+11:19:32.669057 version@stat F·[2 1] S·443B[264B 179B] Sc·[0.50 0.00]
+11:19:32.670519 transaction@flush created L0@1062 N·2 S·156B "0,v879":"las..dex,v880"
+11:19:32.670565 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+11:19:35.255738 transaction@flush created L0@1063 N·1 S·123B "las..dex,v881":"las..dex,v881"
+11:19:35.255788 version@stat F·[4 1] S·722B[543B 179B] Sc·[1.00 0.00]
+11:19:35.256285 table@compaction L0·4 -> L1·1 S·722B Q·881
+11:19:35.256514 transaction@flush created L0@1064 N·2 S·164B "1,v882":"las..dex,v883"
+11:19:35.256547 version@stat F·[5 1] S·886B[707B 179B] Sc·[1.25 0.00]
+11:19:35.256973 table@build created L1@1065 N·2 S·156B "0,v879":"las..dex,v881"
+11:19:35.257198 version@stat F·[1 1] S·320B[164B 156B] Sc·[0.25 0.00]
+11:19:35.257492 table@compaction committed F-4 S-566B Ke·0 D·8 T·1.159176ms
+11:19:35.257614 table@remove removed @1063
+11:19:35.257741 table@remove removed @1062
+11:19:35.257849 table@remove removed @1061
+11:19:35.257951 table@remove removed @1058
+11:19:35.258054 table@remove removed @1055
+11:19:39.649371 transaction@flush created L0@1066 N·1 S·123B "las..dex,v884":"las..dex,v884"
+11:19:39.649422 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:19:39.660407 transaction@flush created L0@1067 N·2 S·164B "2,v885":"las..dex,v886"
+11:19:39.660459 version@stat F·[3 1] S·607B[451B 156B] Sc·[0.75 0.00]
+11:19:41.768604 db@close closing
+11:19:41.768679 db@close done T·72.421µs
+=============== Mar 17, 2016 (IST) ===============
+11:20:54.250861 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:20:54.274570 version@stat F·[3 1] S·607B[451B 156B] Sc·[0.75 0.00]
+11:20:54.274601 db@open opening
+11:20:54.274709 journal@recovery F·1
+11:20:54.275496 journal@recovery recovering @1059
+11:20:54.276524 version@stat F·[3 1] S·607B[451B 156B] Sc·[0.75 0.00]
+11:20:54.277319 db@janitor F·6 G·0
+11:20:54.277350 db@open done T·2.736903ms
+11:20:54.299088 transaction@flush created L0@1070 N·4 S·146B "0,d887":"las..dex,v890"
+11:20:54.299130 version@stat F·[4 1] S·753B[597B 156B] Sc·[1.00 0.00]
+11:20:54.299430 db@close closing
+11:20:54.299492 table@compaction L0·4 -> L1·1 S·753B Q·890
+11:20:54.299503 table@build exiting
+11:20:54.299563 db@close done T·131.483µs
+=============== Mar 17, 2016 (IST) ===============
+11:20:55.454411 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:20:55.454725 version@stat F·[4 1] S·753B[597B 156B] Sc·[1.00 0.00]
+11:20:55.454749 db@open opening
+11:20:55.454900 journal@recovery F·1
+11:20:55.457154 journal@recovery recovering @1068
+11:20:55.459381 version@stat F·[4 1] S·753B[597B 156B] Sc·[1.00 0.00]
+11:20:55.460124 db@janitor F·7 G·0
+11:20:55.460145 db@open done T·5.383824ms
+11:20:55.605361 table@compaction L0·4 -> L1·1 S·753B Q·890
+11:20:55.606222 table@build created L1@1073 N·1 S·124B "las..dex,v890":"las..dex,v890"
+11:20:55.606286 version@stat F·[0 1] S·124B[0B 124B] Sc·[0.00 0.00]
+11:20:55.606512 table@compaction committed F-4 S-629B Ke·0 D·10 T·1.097322ms
+11:20:55.606637 table@remove removed @1070
+11:20:55.606726 table@remove removed @1067
+11:20:55.606802 table@remove removed @1066
+11:20:55.606870 table@remove removed @1064
+11:20:55.606935 table@remove removed @1065
+11:20:57.396323 transaction@flush created L0@1074 N·1 S·124B "las..dex,v891":"las..dex,v891"
+11:20:57.396373 version@stat F·[1 1] S·248B[124B 124B] Sc·[0.25 0.00]
+11:20:57.397471 transaction@flush created L0@1075 N·2 S·156B "0,v892":"las..dex,v893"
+11:20:57.397516 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:20:58.768351 db@close closing
+11:20:58.768470 db@close done T·117.007µs
+=============== Mar 17, 2016 (IST) ===============
+11:21:02.274567 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:21:02.299034 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:21:02.299072 db@open opening
+11:21:02.299213 journal@recovery F·1
+11:21:02.299482 journal@recovery recovering @1071
+11:21:02.300016 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:21:02.301896 db@janitor F·5 G·0
+11:21:02.301941 db@open done T·2.855715ms
+11:21:02.303436 transaction@flush created L0@1078 N·2 S·132B "0,d894":"las..dex,v895"
+11:21:02.303482 version@stat F·[3 1] S·536B[412B 124B] Sc·[0.75 0.00]
+11:21:02.303781 db@close closing
+11:21:02.303891 db@close done T·106.947µs
+=============== Mar 17, 2016 (IST) ===============
+11:21:03.153231 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:21:03.153596 version@stat F·[3 1] S·536B[412B 124B] Sc·[0.75 0.00]
+11:21:03.153623 db@open opening
+11:21:03.153776 journal@recovery F·1
+11:21:03.158418 journal@recovery recovering @1076
+11:21:03.162559 version@stat F·[3 1] S·536B[412B 124B] Sc·[0.75 0.00]
+11:21:03.197584 db@janitor F·6 G·0
+11:21:03.197644 db@open done T·44.003828ms
+11:21:05.519113 transaction@flush created L0@1081 N·1 S·124B "las..dex,v896":"las..dex,v896"
+11:21:05.519155 version@stat F·[4 1] S·660B[536B 124B] Sc·[1.00 0.00]
+11:21:05.520148 transaction@flush created L0@1082 N·2 S·156B "0,v897":"las..dex,v898"
+11:21:05.520184 version@stat F·[5 1] S·816B[692B 124B] Sc·[1.25 0.00]
+11:21:05.520404 table@compaction L0·4 -> L1·1 S·660B Q·896
+11:21:05.551695 table@build created L1@1083 N·1 S·124B "las..dex,v896":"las..dex,v896"
+11:21:05.551786 version@stat F·[1 1] S·280B[156B 124B] Sc·[0.25 0.00]
+11:21:05.552139 table@compaction committed F-4 S-536B Ke·0 D·6 T·31.689055ms
+11:21:05.552322 table@remove removed @1081
+11:21:05.552471 table@remove removed @1078
+11:21:05.552610 table@remove removed @1075
+11:21:05.552743 table@remove removed @1074
+11:21:05.552872 table@remove removed @1073
+11:21:07.774815 db@close closing
+11:21:07.811253 db@close done T·36.512375ms
+=============== Mar 17, 2016 (IST) ===============
+11:21:09.767443 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:21:09.768433 version@stat F·[1 1] S·280B[156B 124B] Sc·[0.25 0.00]
+11:21:09.768455 db@open opening
+11:21:09.768543 journal@recovery F·1
+11:21:09.774407 journal@recovery recovering @1079
+11:21:09.776721 version@stat F·[1 1] S·280B[156B 124B] Sc·[0.25 0.00]
+11:21:09.777472 db@janitor F·4 G·0
+11:21:09.777493 db@open done T·9.028345ms
+11:21:12.110553 transaction@flush created L0@1086 N·1 S·123B "las..dex,v899":"las..dex,v899"
+11:21:12.110602 version@stat F·[2 1] S·403B[279B 124B] Sc·[0.50 0.00]
+11:21:12.116279 transaction@flush created L0@1087 N·2 S·164B "1,v900":"las..dex,v901"
+11:21:12.116377 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:21:14.168902 db@close closing
+11:21:14.169002 db@close done T·94.537µs
+=============== Mar 17, 2016 (IST) ===============
+11:21:14.332307 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:21:14.332543 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:21:14.332563 db@open opening
+11:21:14.332668 journal@recovery F·1
+11:21:14.337265 journal@recovery recovering @1084
+11:21:14.340069 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:21:14.340861 db@janitor F·6 G·0
+11:21:14.340886 db@open done T·8.312607ms
+11:21:14.347551 transaction@flush created L0@1090 N·3 S·140B "0,d902":"las..dex,v904"
+11:21:14.347609 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:21:14.349845 db@close closing
+11:21:14.349929 table@compaction L0·4 -> L1·1 S·707B Q·904
+11:21:14.349943 table@build exiting
+11:21:14.350021 db@close done T·174.49µs
+=============== Mar 17, 2016 (IST) ===============
+11:21:15.467351 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:21:15.478608 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:21:15.478634 db@open opening
+11:21:15.478727 journal@recovery F·1
+11:21:15.479251 journal@recovery recovering @1088
+11:21:15.480098 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:21:15.480851 db@janitor F·7 G·0
+11:21:15.480877 db@open done T·2.23244ms
+11:21:15.481005 table@compaction L0·4 -> L1·1 S·707B Q·904
+11:21:15.481790 table@build created L1@1093 N·1 S·124B "las..dex,v904":"las..dex,v904"
+11:21:15.481861 version@stat F·[0 1] S·124B[0B 124B] Sc·[0.00 0.00]
+11:21:15.482181 table@compaction committed F-4 S-583B Ke·0 D·8 T·1.12229ms
+11:21:15.482350 table@remove removed @1090
+11:21:15.482454 table@remove removed @1087
+11:21:15.482536 table@remove removed @1086
+11:21:15.482613 table@remove removed @1082
+11:21:15.482690 table@remove removed @1083
+11:21:17.569754 transaction@flush created L0@1094 N·1 S·124B "las..dex,v905":"las..dex,v905"
+11:21:17.569797 version@stat F·[1 1] S·248B[124B 124B] Sc·[0.25 0.00]
+11:21:17.570743 transaction@flush created L0@1095 N·2 S·156B "0,v906":"las..dex,v907"
+11:21:17.570792 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:21:24.407439 transaction@flush created L0@1096 N·1 S·123B "las..dex,v908":"las..dex,v908"
+11:21:24.423461 version@stat F·[3 1] S·527B[403B 124B] Sc·[0.75 0.00]
+11:21:24.433915 transaction@flush created L0@1097 N·2 S·164B "1,v909":"las..dex,v910"
+11:21:24.433983 version@stat F·[4 1] S·691B[567B 124B] Sc·[1.00 0.00]
+11:21:24.540031 table@compaction L0·4 -> L1·1 S·691B Q·910
+11:21:24.740751 table@build created L1@1098 N·3 S·179B "0,v906":"las..dex,v910"
+11:21:24.740864 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:21:24.809093 table@compaction committed F-4 S-512B Ke·0 D·4 T·269.007871ms
+11:21:24.809264 table@remove removed @1097
+11:21:24.965244 table@remove removed @1096
+11:21:24.965471 table@remove removed @1095
+11:21:24.965628 table@remove removed @1094
+11:21:24.965797 table@remove removed @1093
+=============== Mar 17, 2016 (IST) ===============
+11:23:45.565103 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:23:45.581180 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:23:45.581212 db@open opening
+11:23:45.581319 journal@recovery F·1
+11:23:45.584052 journal@recovery recovering @1091
+11:23:45.586952 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:23:45.587762 db@janitor F·3 G·0
+11:23:45.587788 db@open done T·6.56419ms
+11:23:45.589065 transaction@flush created L0@1101 N·3 S·140B "0,d911":"las..dex,v913"
+11:23:45.589100 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:23:45.589348 db@close closing
+11:23:45.589410 db@close done T·59.412µs
+=============== Mar 17, 2016 (IST) ===============
+11:23:46.949486 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:23:46.949804 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:23:46.949829 db@open opening
+11:23:46.949963 journal@recovery F·1
+11:23:46.950150 journal@recovery recovering @1099
+11:23:46.950546 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:23:46.951335 db@janitor F·4 G·0
+11:23:46.951365 db@open done T·1.52082ms
+11:23:48.893843 transaction@flush created L0@1104 N·1 S·124B "las..dex,v914":"las..dex,v914"
+11:23:48.893880 version@stat F·[2 1] S·443B[264B 179B] Sc·[0.50 0.00]
+11:23:48.894621 transaction@flush created L0@1105 N·2 S·156B "0,v915":"las..dex,v916"
+11:23:48.894646 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+11:23:49.899317 db@close closing
+11:23:49.899387 db@close done T·67.661µs
+=============== Mar 17, 2016 (IST) ===============
+11:23:53.365544 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:23:53.365796 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+11:23:53.365819 db@open opening
+11:23:53.365953 journal@recovery F·1
+11:23:53.366139 journal@recovery recovering @1102
+11:23:53.366529 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+11:23:53.367329 db@janitor F·6 G·0
+11:23:53.367374 db@open done T·1.542141ms
+11:23:53.368201 transaction@flush created L0@1108 N·2 S·132B "0,d917":"las..dex,v918"
+11:23:53.368270 version@stat F·[4 1] S·731B[552B 179B] Sc·[1.00 0.00]
+11:23:53.368540 db@close closing
+11:23:53.368607 table@compaction L0·4 -> L1·1 S·731B Q·918
+11:23:53.368620 table@build exiting
+11:23:53.368687 db@close done T·144.475µs
+=============== Mar 17, 2016 (IST) ===============
+11:23:54.575935 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:23:54.576194 version@stat F·[4 1] S·731B[552B 179B] Sc·[1.00 0.00]
+11:23:54.576210 db@open opening
+11:23:54.576278 journal@recovery F·1
+11:23:54.576813 journal@recovery recovering @1106
+11:23:54.580138 version@stat F·[4 1] S·731B[552B 179B] Sc·[1.00 0.00]
+11:23:54.581726 db@janitor F·7 G·0
+11:23:54.581763 db@open done T·5.543673ms
+11:23:54.582135 table@compaction L0·4 -> L1·1 S·731B Q·918
+11:23:54.582827 table@build created L1@1111 N·1 S·124B "las..dex,v918":"las..dex,v918"
+11:23:54.582892 version@stat F·[0 1] S·124B[0B 124B] Sc·[0.00 0.00]
+11:23:54.583111 table@compaction committed F-4 S-607B Ke·0 D·10 T·940.317µs
+11:23:54.583243 table@remove removed @1108
+11:23:54.583345 table@remove removed @1105
+11:23:54.583447 table@remove removed @1104
+11:23:54.583557 table@remove removed @1101
+11:23:54.583664 table@remove removed @1098
+11:23:56.453364 transaction@flush created L0@1112 N·1 S·124B "las..dex,v919":"las..dex,v919"
+11:23:56.453420 version@stat F·[1 1] S·248B[124B 124B] Sc·[0.25 0.00]
+11:23:56.455173 transaction@flush created L0@1113 N·2 S·156B "0,v920":"las..dex,v921"
+11:23:56.455215 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:23:58.605322 db@close closing
+11:23:58.605383 db@close done T·59.029µs
+=============== Mar 17, 2016 (IST) ===============
+11:24:01.440023 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:01.525263 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:24:01.525287 db@open opening
+11:24:01.525372 journal@recovery F·1
+11:24:01.527991 journal@recovery recovering @1109
+11:24:01.532814 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:24:01.533607 db@janitor F·5 G·0
+11:24:01.533630 db@open done T·8.334888ms
+11:24:03.589804 transaction@flush created L0@1116 N·1 S·123B "las..dex,v922":"las..dex,v922"
+11:24:03.589867 version@stat F·[3 1] S·527B[403B 124B] Sc·[0.75 0.00]
+11:24:03.590784 transaction@flush created L0@1117 N·2 S·164B "1,v923":"las..dex,v924"
+11:24:03.590856 version@stat F·[4 1] S·691B[567B 124B] Sc·[1.00 0.00]
+11:24:03.591392 table@compaction L0·4 -> L1·1 S·691B Q·924
+11:24:03.592587 table@build created L1@1118 N·3 S·179B "0,v920":"las..dex,v924"
+11:24:03.592683 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:24:03.593124 table@compaction committed F-4 S-512B Ke·0 D·4 T·1.698778ms
+11:24:03.593251 table@remove removed @1117
+11:24:03.593351 table@remove removed @1116
+11:24:03.593494 table@remove removed @1113
+11:24:03.593611 table@remove removed @1112
+11:24:03.593745 table@remove removed @1111
+11:24:05.668650 db@close closing
+11:24:05.669878 db@close done T·1.224617ms
+=============== Mar 17, 2016 (IST) ===============
+11:24:05.913417 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:05.913716 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:24:05.913738 db@open opening
+11:24:05.913843 journal@recovery F·1
+11:24:05.917099 journal@recovery recovering @1114
+11:24:05.922399 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:24:05.923419 db@janitor F·3 G·0
+11:24:05.923450 db@open done T·9.698182ms
+11:24:05.930211 transaction@flush created L0@1121 N·3 S·140B "0,d925":"las..dex,v927"
+11:24:05.930317 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:24:05.930667 db@close closing
+11:24:05.930753 db@close done T·81.783µs
+=============== Mar 17, 2016 (IST) ===============
+11:24:06.152288 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:06.152564 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:24:06.152587 db@open opening
+11:24:06.152688 journal@recovery F·1
+11:24:06.155332 journal@recovery recovering @1119
+11:24:06.162115 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:24:06.163332 db@janitor F·4 G·0
+11:24:06.163469 db@open done T·10.868984ms
+11:24:08.831333 transaction@flush created L0@1124 N·1 S·124B "las..dex,v928":"las..dex,v928"
+11:24:08.831373 version@stat F·[2 1] S·443B[264B 179B] Sc·[0.50 0.00]
+11:24:08.832441 transaction@flush created L0@1125 N·2 S·156B "0,v929":"las..dex,v930"
+11:24:08.832472 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+11:24:11.205001 transaction@flush created L0@1126 N·1 S·123B "las..dex,v931":"las..dex,v931"
+11:24:11.205051 version@stat F·[4 1] S·722B[543B 179B] Sc·[1.00 0.00]
+11:24:11.205519 table@compaction L0·4 -> L1·1 S·722B Q·931
+11:24:11.205781 transaction@flush created L0@1127 N·2 S·164B "1,v932":"las..dex,v933"
+11:24:11.206014 version@stat F·[5 1] S·886B[707B 179B] Sc·[1.25 0.00]
+11:24:11.206334 table@build created L1@1128 N·2 S·156B "0,v929":"las..dex,v931"
+11:24:11.206387 version@stat F·[1 1] S·320B[164B 156B] Sc·[0.25 0.00]
+11:24:11.206657 table@compaction committed F-4 S-566B Ke·0 D·8 T·1.099167ms
+11:24:11.206782 table@remove removed @1126
+11:24:11.206889 table@remove removed @1125
+11:24:11.206979 table@remove removed @1124
+11:24:11.207069 table@remove removed @1121
+11:24:11.207153 table@remove removed @1118
+11:24:15.673727 transaction@flush created L0@1129 N·2 S·131B "1,d934":"las..dex,v935"
+11:24:15.711250 version@stat F·[2 1] S·451B[295B 156B] Sc·[0.50 0.00]
+11:24:15.712391 transaction@flush created L0@1130 N·2 S·164B "1,v936":"las..dex,v937"
+11:24:15.712428 version@stat F·[3 1] S·615B[459B 156B] Sc·[0.75 0.00]
+11:24:17.872256 db@close closing
+11:24:17.872326 db@close done T·67.769µs
+=============== Mar 17, 2016 (IST) ===============
+11:24:41.502241 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:41.503488 version@stat F·[3 1] S·615B[459B 156B] Sc·[0.75 0.00]
+11:24:41.503514 db@open opening
+11:24:41.503596 journal@recovery F·1
+11:24:41.505807 journal@recovery recovering @1122
+11:24:41.506741 version@stat F·[3 1] S·615B[459B 156B] Sc·[0.75 0.00]
+11:24:41.507623 db@janitor F·6 G·0
+11:24:41.507673 db@open done T·4.145537ms
+11:24:41.518512 transaction@flush created L0@1133 N·3 S·140B "0,d938":"las..dex,v940"
+11:24:41.518550 version@stat F·[4 1] S·755B[599B 156B] Sc·[1.00 0.00]
+11:24:41.518837 db@close closing
+11:24:41.518908 table@compaction L0·4 -> L1·1 S·755B Q·940
+11:24:41.518928 table@build exiting
+11:24:41.518987 db@close done T·147.936µs
+=============== Mar 17, 2016 (IST) ===============
+11:24:42.957655 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:42.957889 version@stat F·[4 1] S·755B[599B 156B] Sc·[1.00 0.00]
+11:24:42.957908 db@open opening
+11:24:42.958007 journal@recovery F·1
+11:24:42.958148 journal@recovery recovering @1131
+11:24:42.958568 version@stat F·[4 1] S·755B[599B 156B] Sc·[1.00 0.00]
+11:24:42.959346 db@janitor F·7 G·0
+11:24:42.959379 db@open done T·1.457822ms
+11:24:43.259440 table@compaction L0·4 -> L1·1 S·755B Q·940
+11:24:43.274064 table@build created L1@1136 N·1 S·124B "las..dex,v940":"las..dex,v940"
+11:24:43.274179 version@stat F·[0 1] S·124B[0B 124B] Sc·[0.00 0.00]
+11:24:43.274423 table@compaction committed F-4 S-631B Ke·0 D·10 T·14.893767ms
+11:24:43.274554 table@remove removed @1133
+11:24:43.274644 table@remove removed @1130
+11:24:43.274745 table@remove removed @1129
+11:24:43.274825 table@remove removed @1127
+11:24:43.274901 table@remove removed @1128
+11:24:46.058729 transaction@flush created L0@1137 N·1 S·124B "las..dex,v941":"las..dex,v941"
+11:24:46.058770 version@stat F·[1 1] S·248B[124B 124B] Sc·[0.25 0.00]
+11:24:46.062504 transaction@flush created L0@1138 N·2 S·156B "0,v942":"las..dex,v943"
+11:24:46.062544 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:24:49.245198 transaction@flush created L0@1139 N·1 S·123B "las..dex,v944":"las..dex,v944"
+11:24:49.245253 version@stat F·[3 1] S·527B[403B 124B] Sc·[0.75 0.00]
+11:24:49.246226 transaction@flush created L0@1140 N·2 S·164B "1,v945":"las..dex,v946"
+11:24:49.246297 version@stat F·[4 1] S·691B[567B 124B] Sc·[1.00 0.00]
+11:24:49.246959 table@compaction L0·4 -> L1·1 S·691B Q·946
+11:24:49.247926 table@build created L1@1141 N·3 S·179B "0,v942":"las..dex,v946"
+11:24:49.247987 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:24:49.248267 table@compaction committed F-4 S-512B Ke·0 D·4 T·1.277366ms
+11:24:49.248390 table@remove removed @1140
+11:24:49.248489 table@remove removed @1139
+11:24:49.248626 table@remove removed @1138
+11:24:49.248741 table@remove removed @1137
+11:24:49.248862 table@remove removed @1136
+11:24:50.320974 db@close closing
+11:24:50.321048 db@close done T·70.979µs
+=============== Mar 17, 2016 (IST) ===============
+11:24:50.384798 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:50.384997 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:24:50.385014 db@open opening
+11:24:50.385106 journal@recovery F·1
+11:24:50.385273 journal@recovery recovering @1134
+11:24:50.385936 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:24:50.387298 db@janitor F·3 G·0
+11:24:50.387338 db@open done T·2.313146ms
+11:24:50.393917 transaction@flush created L0@1144 N·3 S·141B "0,d947":"las..dex,v949"
+11:24:50.393957 version@stat F·[1 1] S·320B[141B 179B] Sc·[0.25 0.00]
+11:24:50.394709 db@close closing
+11:24:50.394798 db@close done T·86.958µs
+=============== Mar 17, 2016 (IST) ===============
+11:24:51.505304 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:51.535582 version@stat F·[1 1] S·320B[141B 179B] Sc·[0.25 0.00]
+11:24:51.535602 db@open opening
+11:24:51.535689 journal@recovery F·1
+11:24:51.536474 journal@recovery recovering @1142
+11:24:51.583657 version@stat F·[1 1] S·320B[141B 179B] Sc·[0.25 0.00]
+11:24:51.613025 db@janitor F·4 G·0
+11:24:51.613070 db@open done T·77.454191ms
+11:24:53.845958 transaction@flush created L0@1147 N·1 S·124B "las..dex,v950":"las..dex,v950"
+11:24:53.846020 version@stat F·[2 1] S·444B[265B 179B] Sc·[0.50 0.00]
+11:24:53.846830 transaction@flush created L0@1148 N·2 S·156B "0,v951":"las..dex,v952"
+11:24:53.846876 version@stat F·[3 1] S·600B[421B 179B] Sc·[0.75 0.00]
+11:24:55.946836 db@close closing
+11:24:55.946893 db@close done T·54.58µs
+=============== Mar 17, 2016 (IST) ===============
+11:24:58.126786 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:58.181941 version@stat F·[3 1] S·600B[421B 179B] Sc·[0.75 0.00]
+11:24:58.181986 db@open opening
+11:24:58.190710 journal@recovery F·1
+11:24:58.560353 journal@recovery recovering @1145
+11:24:58.562164 version@stat F·[3 1] S·600B[421B 179B] Sc·[0.75 0.00]
+11:24:58.563080 db@janitor F·6 G·0
+11:24:58.563109 db@open done T·381.109206ms
+11:25:00.275746 transaction@flush created L0@1151 N·1 S·123B "las..dex,v953":"las..dex,v953"
+11:25:00.275787 version@stat F·[4 1] S·723B[544B 179B] Sc·[1.00 0.00]
+11:25:00.276571 transaction@flush created L0@1152 N·2 S·164B "1,v954":"las..dex,v955"
+11:25:00.276626 version@stat F·[5 1] S·887B[708B 179B] Sc·[1.25 0.00]
+11:25:00.277074 table@compaction L0·5 -> L1·1 S·887B Q·955
+11:25:00.277932 table@build created L1@1153 N·3 S·179B "0,v951":"las..dex,v955"
+11:25:00.278000 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:25:00.278349 table@compaction committed F-5 S-708B Ke·0 D·9 T·1.23432ms
+11:25:00.278498 table@remove removed @1152
+11:25:00.278619 table@remove removed @1151
+11:25:00.278716 table@remove removed @1148
+11:25:00.278796 table@remove removed @1147
+11:25:00.278885 table@remove removed @1144
+11:25:00.278965 table@remove removed @1141
+11:25:02.328570 db@close closing
+11:25:02.328645 db@close done T·72.732µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:02.453120 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:02.453506 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:25:02.453531 db@open opening
+11:25:02.453621 journal@recovery F·1
+11:25:02.458119 journal@recovery recovering @1149
+11:25:02.461011 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:25:02.462024 db@janitor F·3 G·0
+11:25:02.462053 db@open done T·8.510309ms
+11:25:02.467324 transaction@flush created L0@1156 N·3 S·140B "0,d956":"las..dex,v958"
+11:25:02.467518 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:25:02.468377 db@close closing
+11:25:02.468457 db@close done T·77.131µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:03.364734 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:03.365001 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:25:03.365017 db@open opening
+11:25:03.365080 journal@recovery F·1
+11:25:03.365616 journal@recovery recovering @1154
+11:25:03.369231 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:25:03.369872 db@janitor F·4 G·0
+11:25:03.369894 db@open done T·4.869219ms
+11:25:05.487811 transaction@flush created L0@1159 N·1 S·124B "las..dex,v959":"las..dex,v959"
+11:25:05.487937 version@stat F·[2 1] S·443B[264B 179B] Sc·[0.50 0.00]
+11:25:05.488670 transaction@flush created L0@1160 N·2 S·156B "0,v960":"las..dex,v961"
+11:25:05.488714 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+11:25:08.196131 transaction@flush created L0@1161 N·1 S·123B "las..dex,v962":"las..dex,v962"
+11:25:08.196158 version@stat F·[4 1] S·722B[543B 179B] Sc·[1.00 0.00]
+11:25:08.196580 table@compaction L0·4 -> L1·1 S·722B Q·962
+11:25:08.196693 transaction@flush created L0@1162 N·2 S·164B "1,v963":"las..dex,v964"
+11:25:08.196719 version@stat F·[5 1] S·886B[707B 179B] Sc·[1.25 0.00]
+11:25:08.197581 table@build created L1@1163 N·2 S·156B "0,v960":"las..dex,v962"
+11:25:08.197626 version@stat F·[1 1] S·320B[164B 156B] Sc·[0.25 0.00]
+11:25:08.197883 table@compaction committed F-4 S-566B Ke·0 D·8 T·1.272109ms
+11:25:08.197987 table@remove removed @1161
+11:25:08.198078 table@remove removed @1160
+11:25:08.198147 table@remove removed @1159
+11:25:08.198220 table@remove removed @1156
+11:25:08.198288 table@remove removed @1153
+11:25:12.634766 transaction@flush created L0@1164 N·2 S·131B "1,d965":"las..dex,v966"
+11:25:12.647979 version@stat F·[2 1] S·451B[295B 156B] Sc·[0.50 0.00]
+11:25:12.670251 transaction@flush created L0@1165 N·2 S·165B "1,v967":"las..dex,v968"
+11:25:12.670414 version@stat F·[3 1] S·616B[460B 156B] Sc·[0.75 0.00]
+11:25:14.702104 db@close closing
+11:25:14.702176 db@close done T·68.786µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:31.284565 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:31.285025 version@stat F·[3 1] S·616B[460B 156B] Sc·[0.75 0.00]
+11:25:31.285050 db@open opening
+11:25:31.285167 journal@recovery F·1
+11:25:31.287954 journal@recovery recovering @1157
+11:25:31.288898 version@stat F·[3 1] S·616B[460B 156B] Sc·[0.75 0.00]
+11:25:31.289533 db@janitor F·6 G·0
+11:25:31.289559 db@open done T·4.495596ms
+11:25:31.294948 transaction@flush created L0@1168 N·3 S·142B "0,d969":"las..dex,v971"
+11:25:31.295019 version@stat F·[4 1] S·758B[602B 156B] Sc·[1.00 0.00]
+11:25:31.297441 db@close closing
+11:25:31.297515 table@compaction L0·4 -> L1·1 S·758B Q·971
+11:25:31.297527 table@build exiting
+11:25:31.297596 db@close done T·154.536µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:32.672135 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:32.672422 version@stat F·[4 1] S·758B[602B 156B] Sc·[1.00 0.00]
+11:25:32.672446 db@open opening
+11:25:32.672785 journal@recovery F·1
+11:25:32.675827 journal@recovery recovering @1166
+11:25:32.678909 version@stat F·[4 1] S·758B[602B 156B] Sc·[1.00 0.00]
+11:25:32.680298 db@janitor F·7 G·0
+11:25:32.680333 db@open done T·7.869571ms
+11:25:32.903899 table@compaction L0·4 -> L1·1 S·758B Q·971
+11:25:32.918060 table@build created L1@1171 N·1 S·124B "las..dex,v971":"las..dex,v971"
+11:25:32.918116 version@stat F·[0 1] S·124B[0B 124B] Sc·[0.00 0.00]
+11:25:32.918364 table@compaction committed F-4 S-634B Ke·0 D·10 T·14.417787ms
+11:25:32.918522 table@remove removed @1168
+11:25:32.918645 table@remove removed @1165
+11:25:32.918757 table@remove removed @1164
+11:25:32.918878 table@remove removed @1162
+11:25:32.918983 table@remove removed @1163
+11:25:35.009178 transaction@flush created L0@1172 N·1 S·124B "las..dex,v972":"las..dex,v972"
+11:25:35.009216 version@stat F·[1 1] S·248B[124B 124B] Sc·[0.25 0.00]
+11:25:35.009879 transaction@flush created L0@1173 N·2 S·156B "0,v973":"las..dex,v974"
+11:25:35.009917 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:25:36.018122 db@close closing
+11:25:36.018189 db@close done T·64.182µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:39.453041 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:39.464001 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:25:39.464044 db@open opening
+11:25:39.464201 journal@recovery F·1
+11:25:39.464382 journal@recovery recovering @1169
+11:25:39.464707 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:25:39.465410 db@janitor F·5 G·0
+11:25:39.465440 db@open done T·1.381772ms
+11:25:39.466243 transaction@flush created L0@1176 N·2 S·132B "0,d975":"las..dex,v976"
+11:25:39.466276 version@stat F·[3 1] S·536B[412B 124B] Sc·[0.75 0.00]
+11:25:39.466863 db@close closing
+11:25:39.466925 db@close done T·59.833µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:39.589524 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:39.589886 version@stat F·[3 1] S·536B[412B 124B] Sc·[0.75 0.00]
+11:25:39.589910 db@open opening
+11:25:39.590025 journal@recovery F·1
+11:25:39.590198 journal@recovery recovering @1174
+11:25:39.590574 version@stat F·[3 1] S·536B[412B 124B] Sc·[0.75 0.00]
+11:25:39.591348 db@janitor F·6 G·0
+11:25:39.591378 db@open done T·1.455617ms
+11:25:42.228492 transaction@flush created L0@1179 N·1 S·124B "las..dex,v977":"las..dex,v977"
+11:25:42.228768 version@stat F·[4 1] S·660B[536B 124B] Sc·[1.00 0.00]
+11:25:42.230174 transaction@flush created L0@1180 N·2 S·156B "0,v978":"las..dex,v979"
+11:25:42.230224 version@stat F·[5 1] S·816B[692B 124B] Sc·[1.25 0.00]
+11:25:42.230759 table@compaction L0·5 -> L1·1 S·816B Q·979
+11:25:42.232486 table@build created L1@1181 N·2 S·156B "0,v978":"las..dex,v979"
+11:25:42.232556 version@stat F·[0 1] S·156B[0B 156B] Sc·[0.00 0.00]
+11:25:42.232831 table@compaction committed F-5 S-660B Ke·0 D·7 T·2.031586ms
+11:25:42.232969 table@remove removed @1180
+11:25:42.233083 table@remove removed @1179
+11:25:42.233205 table@remove removed @1176
+11:25:42.233321 table@remove removed @1173
+11:25:42.233462 table@remove removed @1172
+11:25:42.233577 table@remove removed @1171
+11:25:44.258074 db@close closing
+11:25:44.258138 db@close done T·61.319µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:47.071472 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:47.132846 version@stat F·[0 1] S·156B[0B 156B] Sc·[0.00 0.00]
+11:25:47.132886 db@open opening
+11:25:47.133048 journal@recovery F·1
+11:25:47.880654 journal@recovery recovering @1177
+11:25:47.949427 version@stat F·[0 1] S·156B[0B 156B] Sc·[0.00 0.00]
+11:25:47.950713 db@janitor F·3 G·0
+11:25:47.950753 db@open done T·817.849146ms
+11:25:50.268157 transaction@flush created L0@1184 N·1 S·123B "las..dex,v980":"las..dex,v980"
+11:25:50.268217 version@stat F·[1 1] S·279B[123B 156B] Sc·[0.25 0.00]
+11:25:50.302048 transaction@flush created L0@1185 N·2 S·164B "1,v981":"las..dex,v982"
+11:25:50.302111 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:25:52.567508 db@close closing
+11:25:52.567588 db@close done T·77.069µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:52.776363 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:52.795912 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:25:52.795942 db@open opening
+11:25:52.796102 journal@recovery F·1
+11:25:52.800495 journal@recovery recovering @1182
+11:25:52.829205 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:25:52.838959 db@janitor F·5 G·0
+11:25:52.838996 db@open done T·43.040537ms
+11:25:52.849374 transaction@flush created L0@1188 N·3 S·140B "0,d983":"las..dex,v985"
+11:25:52.849421 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:25:52.851421 db@close closing
+11:25:52.851566 db@close done T·142.5µs
+=============== Mar 17, 2016 (IST) ===============
+11:25:54.801244 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:54.801497 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:25:54.801515 db@open opening
+11:25:54.801609 journal@recovery F·1
+11:25:54.808507 journal@recovery recovering @1186
+11:25:54.810759 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:25:54.811744 db@janitor F·6 G·0
+11:25:54.811778 db@open done T·10.249802ms
+11:25:57.396122 transaction@flush created L0@1191 N·1 S·124B "las..dex,v986":"las..dex,v986"
+11:25:57.396172 version@stat F·[4 1] S·707B[551B 156B] Sc·[1.00 0.00]
+11:25:57.396992 transaction@flush created L0@1192 N·2 S·156B "0,v987":"las..dex,v988"
+11:25:57.397080 version@stat F·[5 1] S·863B[707B 156B] Sc·[1.25 0.00]
+11:25:57.398839 table@compaction L0·5 -> L1·1 S·863B Q·988
+11:25:57.399868 table@build created L1@1193 N·2 S·156B "0,v987":"las..dex,v988"
+11:25:57.399980 version@stat F·[0 1] S·156B[0B 156B] Sc·[0.00 0.00]
+11:25:57.400270 table@compaction committed F-5 S-707B Ke·0 D·9 T·1.39096ms
+11:25:57.400496 table@remove removed @1192
+11:25:57.400643 table@remove removed @1191
+11:25:57.401152 table@remove removed @1188
+11:25:57.401274 table@remove removed @1185
+11:25:57.401399 table@remove removed @1184
+11:25:57.401512 table@remove removed @1181
+11:26:04.204871 transaction@flush created L0@1194 N·1 S·123B "las..dex,v989":"las..dex,v989"
+11:26:04.239788 version@stat F·[1 1] S·279B[123B 156B] Sc·[0.25 0.00]
+11:26:04.315415 transaction@flush created L0@1195 N·2 S·164B "1,v990":"las..dex,v991"
+11:26:04.315473 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:26:06.480566 db@close closing
+11:26:06.480637 db@close done T·68.903µs
+=============== Mar 17, 2016 (IST) ===============
+11:28:20.520971 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:28:20.521167 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:28:20.521185 db@open opening
+11:28:20.521255 journal@recovery F·1
+11:28:20.522008 journal@recovery recovering @1189
+11:28:20.523057 version@stat F·[2 1] S·443B[287B 156B] Sc·[0.50 0.00]
+11:28:20.523886 db@janitor F·5 G·0
+11:28:20.523912 db@open done T·2.717871ms
+11:28:20.525316 transaction@flush created L0@1198 N·3 S·140B "0,d992":"las..dex,v994"
+11:28:20.525372 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:28:20.525707 db@close closing
+11:28:20.525794 db@close done T·83.528µs
+=============== Mar 17, 2016 (IST) ===============
+11:28:21.847403 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:28:21.881508 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:28:21.881532 db@open opening
+11:28:21.881635 journal@recovery F·1
+11:28:21.884157 journal@recovery recovering @1196
+11:28:21.888461 version@stat F·[3 1] S·583B[427B 156B] Sc·[0.75 0.00]
+11:28:21.889410 db@janitor F·6 G·0
+11:28:21.889469 db@open done T·7.921775ms
+11:28:25.164303 transaction@flush created L0@1201 N·1 S·124B "las..dex,v995":"las..dex,v995"
+11:28:25.164364 version@stat F·[4 1] S·707B[551B 156B] Sc·[1.00 0.00]
+11:28:25.165806 transaction@flush created L0@1202 N·2 S·156B "0,v996":"las..dex,v997"
+11:28:25.165853 version@stat F·[5 1] S·863B[707B 156B] Sc·[1.25 0.00]
+11:28:25.166083 table@compaction L0·4 -> L1·1 S·707B Q·995
+11:28:25.207809 table@build created L1@1203 N·1 S·124B "las..dex,v995":"las..dex,v995"
+11:28:25.207980 version@stat F·[1 1] S·280B[156B 124B] Sc·[0.25 0.00]
+11:28:25.208353 table@compaction committed F-4 S-583B Ke·0 D·8 T·42.220692ms
+11:28:25.208480 table@remove removed @1201
+11:28:25.208609 table@remove removed @1198
+11:28:25.208707 table@remove removed @1195
+11:28:25.208796 table@remove removed @1194
+11:28:25.208891 table@remove removed @1193
+11:28:28.748166 transaction@flush created L0@1204 N·1 S·123B "las..dex,v998":"las..dex,v998"
+11:28:28.748205 version@stat F·[2 1] S·403B[279B 124B] Sc·[0.50 0.00]
+11:28:28.807506 transaction@flush created L0@1205 N·2 S·164B "1,v999":"las..dex,v1000"
+11:28:28.807556 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:28:29.588698 db@close closing
+11:28:29.588801 db@close done T·95.322µs
+=============== Mar 17, 2016 (IST) ===============
+11:28:29.870460 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:28:29.898834 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:28:29.898873 db@open opening
+11:28:29.898980 journal@recovery F·1
+11:28:29.899256 journal@recovery recovering @1199
+11:28:29.899618 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:28:29.900389 db@janitor F·6 G·0
+11:28:29.900424 db@open done T·1.538487ms
+11:28:29.936157 transaction@flush created L0@1208 N·3 S·140B "0,d1001":"las..dex,v1003"
+11:28:29.936255 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:28:29.939861 db@close closing
+11:28:29.939932 table@compaction L0·4 -> L1·1 S·707B Q·1003
+11:28:29.939945 table@build exiting
+11:28:29.940026 db@close done T·163.569µs
+=============== Mar 17, 2016 (IST) ===============
+11:28:31.230358 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:28:31.230708 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:28:31.230727 db@open opening
+11:28:31.230841 journal@recovery F·1
+11:28:31.253075 journal@recovery recovering @1206
+11:28:31.260699 version@stat F·[4 1] S·707B[583B 124B] Sc·[1.00 0.00]
+11:28:31.262081 db@janitor F·7 G·0
+11:28:31.262120 db@open done T·31.3828ms
+11:28:31.262206 table@compaction L0·4 -> L1·1 S·707B Q·1003
+11:28:31.283532 table@build created L1@1211 N·1 S·124B "las..dex,v1003":"las..dex,v1003"
+11:28:31.283666 version@stat F·[0 1] S·124B[0B 124B] Sc·[0.00 0.00]
+11:28:31.284028 table@compaction committed F-4 S-583B Ke·0 D·8 T·21.762011ms
+11:28:31.284243 table@remove removed @1208
+11:28:31.284379 table@remove removed @1205
+11:28:31.284515 table@remove removed @1204
+11:28:31.284640 table@remove removed @1202
+11:28:31.284809 table@remove removed @1203
+11:28:33.775088 transaction@flush created L0@1212 N·1 S·124B "las..dex,v1004":"las..dex,v1004"
+11:28:33.775142 version@stat F·[1 1] S·248B[124B 124B] Sc·[0.25 0.00]
+11:28:33.790394 transaction@flush created L0@1213 N·2 S·156B "0,v1005":"las..dex,v1006"
+11:28:33.790439 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:28:35.880387 db@close closing
+11:28:35.904538 db@close done T·24.138742ms
+=============== Mar 17, 2016 (IST) ===============
+11:28:38.261288 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:28:38.264419 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:28:38.264442 db@open opening
+11:28:38.264530 journal@recovery F·1
+11:28:38.265038 journal@recovery recovering @1209
+11:28:38.265847 version@stat F·[2 1] S·404B[280B 124B] Sc·[0.50 0.00]
+11:28:38.266568 db@janitor F·5 G·0
+11:28:38.266591 db@open done T·2.14051ms
+11:28:39.905559 transaction@flush created L0@1216 N·1 S·123B "las..dex,v1007":"las..dex,v1007"
+11:28:39.905625 version@stat F·[3 1] S·527B[403B 124B] Sc·[0.75 0.00]
+11:28:39.906992 transaction@flush created L0@1217 N·2 S·164B "1,v1008":"las..dex,v1009"
+11:28:39.907038 version@stat F·[4 1] S·691B[567B 124B] Sc·[1.00 0.00]
+11:28:39.907447 table@compaction L0·4 -> L1·1 S·691B Q·1009
+11:28:39.908524 table@build created L1@1218 N·3 S·179B "0,v1005":"las..dex,v1009"
+11:28:39.908593 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:28:39.908918 table@compaction committed F-4 S-512B Ke·0 D·4 T·1.433834ms
+11:28:39.909080 table@remove removed @1217
+11:28:39.909209 table@remove removed @1216
+11:28:39.909334 table@remove removed @1213
+11:28:39.909457 table@remove removed @1212
+11:28:39.909555 table@remove removed @1211
+11:28:42.014334 db@close closing
+11:28:42.014394 db@close done T·58.299µs
+=============== Mar 17, 2016 (IST) ===============
+11:28:42.173332 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:28:42.175131 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:28:42.175161 db@open opening
+11:28:42.175310 journal@recovery F·1
+11:28:42.181185 journal@recovery recovering @1214
+11:28:42.184577 version@stat F·[0 1] S·179B[0B 179B] Sc·[0.00 0.00]
+11:28:42.185453 db@janitor F·3 G·0
+11:28:42.185536 db@open done T·10.361977ms
+11:28:42.190942 transaction@flush created L0@1221 N·3 S·140B "0,d1010":"las..dex,v1012"
+11:28:42.190988 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:28:42.191268 db@close closing
+11:28:42.191353 db@close done T·81.435µs
+=============== Mar 17, 2016 (IST) ===============
+11:28:42.941536 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:28:42.941839 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:28:42.941857 db@open opening
+11:28:42.941921 journal@recovery F·1
+11:28:42.947901 journal@recovery recovering @1219
+11:28:42.950228 version@stat F·[1 1] S·319B[140B 179B] Sc·[0.25 0.00]
+11:28:42.950970 db@janitor F·4 G·0
+11:28:42.950990 db@open done T·9.124585ms
+11:28:45.558446 transaction@flush created L0@1224 N·1 S·124B "las..dex,v1013":"las..dex,v1013"
+11:28:45.558485 version@stat F·[2 1] S·443B[264B 179B] Sc·[0.50 0.00]
+11:28:45.559283 transaction@flush created L0@1225 N·2 S·156B "0,v1014":"las..dex,v1015"
+11:28:45.559324 version@stat F·[3 1] S·599B[420B 179B] Sc·[0.75 0.00]
+11:28:52.022720 transaction@flush created L0@1226 N·2 S·132B "0,d1016":"las..dex,v1017"
+11:28:52.072042 version@stat F·[4 1] S·731B[552B 179B] Sc·[1.00 0.00]
+11:28:52.073191 transaction@flush created L0@1227 N·2 S·156B "0,v1018":"las..dex,v1019"
+11:28:52.073312 table@compaction L0·4 -> L1·1 S·731B Q·1017
+11:28:52.073444 version@stat F·[5 1] S·887B[708B 179B] Sc·[1.25 0.00]
+11:28:52.074417 table@build created L1@1228 N·1 S·124B "las..dex,v1017":"las..dex,v1017"
+11:28:52.074466 version@stat F·[1 1] S·280B[156B 124B] Sc·[0.25 0.00]
+11:28:52.074717 table@compaction committed F-4 S-607B Ke·0 D·10 T·1.37084ms
+11:28:52.075179 table@remove removed @1226
+11:28:52.075293 table@remove removed @1225
+11:28:52.075386 table@remove removed @1224
+11:28:52.075466 table@remove removed @1221
+11:28:52.075556 table@remove removed @1218
+11:28:52.075610 transaction@flush created L0@1229 N·1 S·123B "las..dex,v1020":"las..dex,v1020"
+11:28:52.075637 version@stat F·[2 1] S·403B[279B 124B] Sc·[0.50 0.00]
+11:28:52.092747 transaction@flush created L0@1230 N·2 S·164B "1,v1021":"las..dex,v1022"
+11:28:52.092792 version@stat F·[3 1] S·567B[443B 124B] Sc·[0.75 0.00]
+11:28:52.093769 transaction@flush created L0@1231 N·1 S·123B "las..dex,v1023":"las..dex,v1023"
+11:28:52.093813 version@stat F·[4 1] S·690B[566B 124B] Sc·[1.00 0.00]
+11:28:52.094889 table@compaction L0·4 -> L1·1 S·690B Q·1023
+11:28:52.110523 transaction@flush created L0@1232 N·2 S·164B "2,v1024":"las..dex,v1025"
+11:28:52.110664 table@build created L1@1233 N·3 S·177B "0,v1018":"las..dex,v1023"
+11:28:52.110598 version@stat F·[5 1] S·854B[730B 124B] Sc·[1.25 0.00]
+11:28:52.111096 version@stat F·[1 1] S·341B[164B 177B] Sc·[0.25 0.00]
+11:28:52.111367 table@compaction committed F-4 S-513B Ke·0 D·4 T·16.155144ms
+11:28:52.111540 table@remove removed @1231
+11:28:52.111671 table@remove removed @1230
+11:28:52.111793 table@remove removed @1229
+11:28:52.111916 table@remove removed @1227
+11:28:52.112041 table@remove removed @1228
+11:28:54.217880 db@close closing
+11:28:54.217956 db@close done T·71.986µs
