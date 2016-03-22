@@ -245,7 +245,7 @@ func NewStateMachine(servers int64, id int64, actionCh chan events, electionTime
 		for i:=int64(0); i<size; i++ {
 			b, _ := lg.Get(i)
 			var entry LogInfo
-			json.Unmarshal(b, &entry)
+			json.Unmarshal(b.([]byte), &entry)
 			sm.log[i] = entry.Data
 			sm.logTerm[i] = entry.Term
 		}

@@ -233,7 +233,7 @@ func (rn *RaftNode) Get(index int64) ([]byte, error) {
 	rn.logMutex.RLock()
 	c, err := rn.lg.Get(index)
 	var entry LogInfo
-	json.Unmarshal(c, &entry)
+	json.Unmarshal(c.([]byte), &entry)
 	rn.logMutex.RUnlock()
 	return entry.Data, err
 }
