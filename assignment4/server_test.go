@@ -39,7 +39,6 @@ func TestTCPSimple(t *testing.T) {
 
 	text := "delete hi.txt\r\n"
 	fmt.Fprintf(conn, text)
-
 	message, _ := bufio.NewReader(conn).ReadString('\n')
 
 	// Write a file
@@ -53,36 +52,6 @@ func TestTCPSimple(t *testing.T) {
 		t.Error("Non-numeric version found")
 	}
 	version := int64(ver)
-
-/**************************************************************/
-// Leader shutdown and replication check
-	var ldr *RaftNode
-	for {
-		ldr = getLeader(rafts)
-		if (ldr != nil) { 
-			break
-		}
-	}
-	ldr.ShutDown()
-
-	time.Sleep(5 * time.Second)
-
-	for {
-		ldr = getLeader(rafts)
-		if (ldr != nil) { 
-			break
-		}
-	}
-
-	fmt.Fprintf(conn, "read %v\r\n", name) // try a read now
-	scanner.Scan()
-
-	arr = strings.Split(scanner.Text(), " ")
-	expect(t, arr[0], "CONTENTS")
-	expect(t, arr[1], fmt.Sprintf("%v", version)) // expect only accepts strings, convert int version to string
-	expect(t, arr[2], fmt.Sprintf("%v", len(contents)))	
-	scanner.Scan()
-	expect(t, contents, scanner.Text())
 
 /**************************************************************/
 // Test version increment
@@ -118,14 +87,50 @@ func TestTCPSimple(t *testing.T) {
 
 	text = "delete input.txt\r\n"
 	fmt.Fprintf(conn, text)
+	message, _ = bufio.NewReader(conn).ReadString('\n')
+	//fmt.Println("Done Version Check")
 
+/**************************************************************/
+// Leader shutdown and replication check
+	var ldr *RaftNode
+	for {
+		ldr = getLeader(rafts)
+		if (ldr != nil) { 
+			break
+		}
+	}
+	ldr.ShutDown()
+
+	time.Sleep(5 * time.Second)
+
+	for {
+		ldr = getLeader(rafts)
+		if (ldr != nil) { 
+			break
+		}
+	}
+
+	fmt.Fprintf(conn, "read %v\r\n", name) // try a read now
+	scanner.Scan()
+
+	arr = strings.Split(scanner.Text(), " ")
+	expect(t, arr[0], "CONTENTS")
+	expect(t, arr[1], fmt.Sprintf("%v", version)) // expect only accepts strings, convert int version to string
+	expect(t, arr[2], fmt.Sprintf("%v", len(contents)))	
+	scanner.Scan()
+	expect(t, contents, scanner.Text())
+
+	text = "delete hi.txt\r\n"
+	fmt.Fprintf(conn, text)
+	message, _ = bufio.NewReader(conn).ReadString('\n')
+
+/**************************************************************/
+// Test concurrent write to the same file by multiple clients
 	text = "delete input2.txt\r\n"
 	fmt.Fprintf(conn, text)
 	message, _ = bufio.NewReader(conn).ReadString('\n')
 	//fmt.Println("Kill ok")
 
-/**************************************************************/
-// Test concurrent write to the same file by multiple clients
 	i := 0
 	var wg sync.WaitGroup
 	wg.Add(20)
@@ -143,6 +148,11 @@ func TestTCPSimple(t *testing.T) {
 	//fmt.Print("Message from server: "+message)
 
 	if len(message) < 8 || message[:8] != "CONTENTS" {
+		t.Error("Error in concurrent write")
+	}
+
+/*
+	if len(message) < 8 || message[:8] != "CONTENTS" {
 		message, _ = bufio.NewReader(conn).ReadString('\n')
 		//fmt.Print("Message from server: "+message)
 
@@ -150,9 +160,11 @@ func TestTCPSimple(t *testing.T) {
 			t.Error("Error in concurrent write")
 		}
 	}
+*/
 
 	text = "delete input2.txt\r\n"
 	fmt.Fprintf(conn, text)
+	message, _ = bufio.NewReader(conn).ReadString('\n')
 
 }
 

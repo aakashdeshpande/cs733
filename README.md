@@ -44,7 +44,7 @@ go get github.com/syndtr/goleveldb/leveldb
 	In the assignment2 directory, 
 	"go test" performs the test written in raft_test.go
 
-2] Assignment 3 : Raft Node
+3] Assignment 3 : Raft Node
 
 	a] raft.go
 	Contains a description of the Raft state machine as described in the previous assignment
@@ -57,3 +57,37 @@ go get github.com/syndtr/goleveldb/leveldb
 
 	In the assignment3 directory, 
 	"go test" performs the test written in node_test.go	
+
+4] Distributed file system
+
+	We work on a file system with the following system design/layers -
+
+	a] Client handlers : Frontend for every client. Composed of the file ClientHandler.go which is described in detail in the section on Assignment1.
+	b] Raft Block : For replication. Attached to a file system
+		1. Node.go : Wrapper on the Raft state machine which listens to Client Handlers, and passes Raft output to File system. Described in detail in the 				section on Assignment2.
+		2. Raft.go : Raft state machine which processes the messages recieved by the Node. Described in detail in the section on Assignment3.
+	c] File system : Independent file system which implements the instructions passed on by the Raft Node. Ensures consistency through locking.
+					 Passes output to the appropriate Client Handler.	
+	d] Server : Setup and initialisation of the cluster and file system blocks. Entry point in the code.				 
+
+	This Distributed File System can perform the following operations:
+		1.Write to file
+		2.Compare version and swap file
+		3.Read file
+		4.Delete file
+
+	The File System mechanism replicates writes over all Raft + FS blocks. Thus, it provides fault tolerance and replication. It ensures Strong Consistency of the data through linearization of writes at the Raft level.					 
+	Reads are not replicated, but can be processed by any node. Thus it provides performance benifits as well.
+
+	In the assignment4 directory, 
+	"go test" performs the test written in server_test.go
+
+	Tests check the following -
+	a] Basic read/write functionality 
+	b] Version increment under write/CAS
+	c] Leader shutdown and reelection
+	d] Concurrent write by multiple clients
+
+
+
+
