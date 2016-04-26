@@ -217,7 +217,7 @@ func (rn *RaftNode) Id() int {
 }
 
 func (rn *RaftNode) Append(data []byte) {
-    // Append new message
+    // Append new message, read request not replicated
     var n Msg
     json.Unmarshal(data, &n)
     if (n.Kind == 0) {

@@ -128,8 +128,8 @@ func TestTCPSimple(t *testing.T) {
 // Test concurrent write to the same file by multiple clients
 	i := 0
 	var wg sync.WaitGroup
-	wg.Add(10)
-	for i < 10 {
+	wg.Add(20)
+	for i < 20 {
 		go clients(&wg, t)
 		i++
 	}
