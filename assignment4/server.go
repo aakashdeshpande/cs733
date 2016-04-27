@@ -7,9 +7,9 @@ import "net"
 
 func serverMain(rafts []RaftNode) {
  
-	fservers := make([]*FileService, 3)
+	fservers := make([]*FileService, len(configs.Peers))
 
-	for i:=0; i<3; i++ {
+	for i:=0; i<len(configs.Peers); i++ {
 		defer rafts[i].lg.Close()
 		go rafts[i].processEvents()
 	}
@@ -24,7 +24,7 @@ func serverMain(rafts []RaftNode) {
 		rArray[i] = make(chan Response)
 	}
 
-	for i:=0; i<3; i++ {
+	for i:=0; i<len(configs.Peers); i++ {
 		fservers[i] = NewFS(i, rArray, rafts[i].CommitChannel())
 		go fservers[i].Listen()
 	}

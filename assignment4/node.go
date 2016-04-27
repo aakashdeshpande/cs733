@@ -58,9 +58,9 @@ var configs cluster.Config = cluster.Config{
         Peers: []cluster.PeerConfig{
             {Id:0, Address:"localhost:8001"},
 			{Id:1, Address:"localhost:8002"},
-			{Id:2, Address:"localhost:8003"}}}
-			//{Id:3, Address:"localhost:8004"},
-			//{Id:4, Address:"localhost:8005"}}}
+			{Id:2, Address:"localhost:8003"},
+			{Id:3, Address:"localhost:8004"},
+			{Id:4, Address:"localhost:8005"}}}
 
 
 /**************************************************************/
@@ -291,7 +291,7 @@ func (rn *RaftNode) ShutDown() {
 func makeRafts() ([]RaftNode){
 	var r []RaftNode
 	r = make([]RaftNode, len(configs.Peers))
-	for i:=0; i<3; i++ {
+	for i:=0; i<len(configs.Peers); i++ {
 		config := NodeConfig{configs, i, "Logs/", 500}
 		r[i] = New(config)
 		r[i].server, _ = cluster.New(i, configs)

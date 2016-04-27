@@ -40,7 +40,7 @@ func termReset() {
 
 /**************************************************************/
 // Simple serial check of getting and setting
-func TestTCPSimple(t *testing.T) {
+func TestFileSystem(t *testing.T) {
 	termReset();
 
 	//rafts, _ := makeMockRafts() // array of []raft.Node
