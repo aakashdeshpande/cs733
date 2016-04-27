@@ -6,6 +6,8 @@ import "bufio"
 import "sync"
 import "strings"
 import "strconv"
+import "github.com/cs733-iitb/log"
+import "github.com/syndtr/goleveldb/leveldb"
 //import "io"
 //import "os"
 
@@ -18,12 +20,31 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
+// Resets all logs and term, votedFor values
+func termReset() {
+	currentTerm, _ := leveldb.OpenFile("currentTerm", nil)
+	defer currentTerm.Close()
+	// Database to store votedFor
+	voted, _ := leveldb.OpenFile("votedFor", nil)
+	defer voted.Close()
+
+	for i:=0; i<len(configs.Peers); i++ {
+		currentTerm.Put([]byte(strconv.FormatInt(int64(i), 10)), []byte(strconv.FormatInt(int64(0), 10)), nil)
+		voted.Put([]byte(strconv.FormatInt(int64(i), 10)), []byte(strconv.FormatInt(int64(-1), 10)), nil)
+
+		lg, _ := log.Open("Logs/Log" + strconv.Itoa(i))
+		lg.TruncateToEnd(0)
+		lg.Close()
+	}
+}
+
+/**************************************************************/
 // Simple serial check of getting and setting
 func TestTCPSimple(t *testing.T) {
 	termReset();
 
-/**************************************************************/
-	rafts, _ := makeMockRafts() // array of []raft.Node
+	//rafts, _ := makeMockRafts() // array of []raft.Node
+	rafts := makeRafts()
 	go serverMain(rafts) // launch the server as a goroutine.
 	time.Sleep(5 * time.Second)
 
@@ -52,6 +73,7 @@ func TestTCPSimple(t *testing.T) {
 		t.Error("Non-numeric version found")
 	}
 	version := int64(ver)
+	//fmt.Println("Done Write")
 
 /**************************************************************/
 // Test version increment
@@ -100,15 +122,18 @@ func TestTCPSimple(t *testing.T) {
 		}
 	}
 	ldr.ShutDown()
+	//rafts[(ldr.Id() + 1)%5].ShutDown()
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(1 * time.Second)
 
+	//fmt.Println("Started Leader ReElection")
 	for {
 		ldr = getLeader(rafts)
 		if (ldr != nil) { 
 			break
 		}
 	}
+	//fmt.Println("Done Leader ReElection")
 
 	fmt.Fprintf(conn, "read %v\r\n", name) // try a read now
 	scanner.Scan()
@@ -133,13 +158,14 @@ func TestTCPSimple(t *testing.T) {
 
 	i := 0
 	var wg sync.WaitGroup
-	wg.Add(20)
-	for i < 20 {
+	wg.Add(10)
+	for i < 10 {
 		go clients(&wg, t)
 		i++
 	}
 
 	wg.Wait()
+	//fmt.Println("Done Write")
 
 	text = "read input2.txt\r\n"
 	fmt.Fprintf(conn, text)
@@ -185,6 +211,7 @@ func clients(wg *sync.WaitGroup, t *testing.T) {
 	}
 
 	wg.Done()
+	//fmt.Println("Done single Write")
 }
 
 

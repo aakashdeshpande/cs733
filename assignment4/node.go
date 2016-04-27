@@ -58,9 +58,9 @@ var configs cluster.Config = cluster.Config{
         Peers: []cluster.PeerConfig{
             {Id:0, Address:"localhost:8001"},
 			{Id:1, Address:"localhost:8002"},
-			{Id:2, Address:"localhost:8003"},
-			{Id:3, Address:"localhost:8004"},
-			{Id:4, Address:"localhost:8005"}}}
+			{Id:2, Address:"localhost:8003"}}}
+			//{Id:3, Address:"localhost:8004"},
+			//{Id:4, Address:"localhost:8005"}}}
 
 
 /**************************************************************/
@@ -288,11 +288,12 @@ func (rn *RaftNode) ShutDown() {
 /**************************************************************/
 
 // Generates a cluster of 5 raft nodes with associated tcp ports
-func makeRafts() []RaftNode {
+func makeRafts() ([]RaftNode){
 	var r []RaftNode
-	for i:=0; i<len(configs.Peers); i++ {
+	r = make([]RaftNode, len(configs.Peers))
+	for i:=0; i<3; i++ {
 		config := NodeConfig{configs, i, "Logs/", 500}
-		r = append(r, New(config))
+		r[i] = New(config)
 		r[i].server, _ = cluster.New(i, configs)
 	}
 	return r
@@ -332,24 +333,6 @@ func getLeader(r []RaftNode) *RaftNode {
 		}
 	}
 	return nil
-}
-
-// Resets all logs and term, votedFor values
-func termReset() {
-	currentTerm, _ := leveldb.OpenFile("currentTerm", nil)
-	defer currentTerm.Close()
-	// Database to store votedFor
-	voted, _ := leveldb.OpenFile("votedFor", nil)
-	defer voted.Close()
-
-	for i:=0; i<len(configs.Peers); i++ {
-		currentTerm.Put([]byte(strconv.FormatInt(int64(i), 10)), []byte(strconv.FormatInt(int64(0), 10)), nil)
-		voted.Put([]byte(strconv.FormatInt(int64(i), 10)), []byte(strconv.FormatInt(int64(-1), 10)), nil)
-
-		lg, _ := log.Open("Logs/Log" + strconv.Itoa(i))
-		lg.TruncateToEnd(0)
-		lg.Close()
-	}
 }
 
 /**************************************************************/
