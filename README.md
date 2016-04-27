@@ -2,17 +2,27 @@ Aakash Deshpande
 120050005
 ==========================================
 
-CS733
-==========================================
+#CS733#
 
 This repository contains assignments for the course CS733. 
 Assignments are written in golang.
 
-Repository must be added to the src folder of the golang workspace.
+Each assignment forms a component for a distributed file system. It is based on a Raft cluster which ensures strong consistency. Client interacts with a frontend which gives the appearance of a single File System. Internally however, the system consists of multiple file servers which replicate the data for fault tolerance. Raft cluster takes input from the frontend and linearizes it to ensure that the updates happen in the same order on all file systems. 
+
+Installation
+==========================================
+Repository must be added to the src folder of the golang workspace using the following command:
+`go get github.com/aakashdeshpande/cs733`
 
 Leveldb package for Golang must be imported. This can be done using the following command:
-go get github.com/syndtr/goleveldb/leveldb
+`go get github.com/syndtr/goleveldb/leveldb`
 
+We also need the log and cluster packages designed for Raft nodes:
+`go get github.com/cs733-iitb/log`
+`go get github.com/cs733-iitb/cluster`
+
+Components
+==========================================
 1] Assignment 1 : File Versioning system
 	
 	a] server.go
@@ -27,8 +37,8 @@ go get github.com/syndtr/goleveldb/leveldb
 	Contains test cases to ensure that server behaviour is consistent with the requirements
 
 	In the assignment1 directory, 
-	"go run server.go" initiates the server
-	"go test" performs the test written in server_test.go
+	`go run server.go` initiates the server
+	`go test` performs the test written in server_test.go
 
 2] Assignment 2 : Raft State Machine
 
@@ -42,7 +52,7 @@ go get github.com/syndtr/goleveldb/leveldb
 	Contains test cases to ensure that state machine behaviour is consistent with the requirements
 
 	In the assignment2 directory, 
-	"go test" performs the test written in raft_test.go
+	`go test` performs the test written in raft_test.go
 
 3] Assignment 3 : Raft Node
 
@@ -56,7 +66,7 @@ go get github.com/syndtr/goleveldb/leveldb
 	Contains test cases to ensure that RaftNode behaviour is consistent with the requirements
 
 	In the assignment3 directory, 
-	"go test" performs the test written in node_test.go	
+	`go test` performs the test written in node_test.go	
 
 4] Distributed file system
 
@@ -64,7 +74,7 @@ go get github.com/syndtr/goleveldb/leveldb
 
 	a] Client handlers : Frontend for every client. Composed of the file ClientHandler.go which is described in detail in the section on Assignment1.
 	b] Raft Block : For replication. Attached to a file system
-		1. Node.go : Wrapper on the Raft state machine which listens to Client Handlers, and passes Raft output to File system. Described in detail in the 				section on Assignment2.
+		1. Node.go : Wrapper on the Raft state machine which listens to Client Handlers, and passes Raft output to File system. Described in detail in the section on Assignment2.
 		2. Raft.go : Raft state machine which processes the messages recieved by the Node. Described in detail in the section on Assignment3.
 	c] File system : Independent file system which implements the instructions passed on by the Raft Node. Ensures consistency through locking.
 					 Passes output to the appropriate Client Handler.	
@@ -76,11 +86,11 @@ go get github.com/syndtr/goleveldb/leveldb
 		3.Read file
 		4.Delete file
 
-	The File System mechanism replicates writes over all Raft + FS blocks. Thus, it provides fault tolerance and replication. It ensures Strong Consistency of the data through linearization of writes at the Raft level.					 
+	The File System mechanism replicates writes over all *Raft + FS* blocks. Thus, it provides fault tolerance and replication. It ensures Strong Consistency of the data through linearization of writes at the Raft level.					 
 	Reads are not replicated, but can be processed by any node. Thus it provides performance benifits as well.
 
 	In the assignment4 directory, 
-	"go test" performs the test written in server_test.go
+	`go test` performs the test written in server_test.go
 
 	Tests check the following -
 	a] Basic read/write functionality 
@@ -88,6 +98,10 @@ go get github.com/syndtr/goleveldb/leveldb
 	c] Leader shutdown and reelection
 	d] Concurrent write by multiple clients
 
+	To check the data of the active file systems, use the following commands,
+	`cd replicationTests`
+	`go run replication_check.go`
+	This will print out the file data in each file system. We can thus observe whether replication is taking place as expected.
 
-
+	`go run server.go clientHandler.go node.go raft.go fs.go` will start a server listening on localhost, port 8080. This server will be supported by five *Raft + FS* blocks, running on a cluster. 
 
